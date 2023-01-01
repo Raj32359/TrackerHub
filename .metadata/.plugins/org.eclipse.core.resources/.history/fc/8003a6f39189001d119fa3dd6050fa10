@@ -1,0 +1,5 @@
+package com.tarckerhub.util;
+
+public class HashingPasswordGenerator {
+
+}
