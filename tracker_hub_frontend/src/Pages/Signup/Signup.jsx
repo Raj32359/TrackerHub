@@ -4,6 +4,7 @@ import "./Signup.css";
 import 'react-toastify/dist/ReactToastify.css';
 import { Button, Container, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
+import axios from "axios";
 
 const useStyles = makeStyles(theme => ({
   textFieldLabelFocused:{},
@@ -29,8 +30,20 @@ function Signup() {
   const [formErrors, setFormErrors] = useState({});
   const [isSubmit, setIsSubmit] = useState(false);
 
-  const notify = () =>
-    toast.error("Please Enter Credentails", {
+  const notify = (msg) =>
+    toast.success(msg, {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+    });
+
+    const badNotify = (msg) =>
+    toast.error(msg, {
       position: "top-right",
       autoClose: 5000,
       hideProgressBar: false,
@@ -80,6 +93,32 @@ function Signup() {
           errors.password ="Password should not be more than 10 characters";
         }
         return errors;
+      }
+      const URL = "http://localhost:9092/user/signup";
+
+      const userSignup = (e) => {
+        e.preventDefault();
+        const data = {
+          username: formValues.username,
+          email:formValues.email,
+          password:formValues.password,
+          role: formValues.role
+        }
+        console.log("credentials :",data);
+       
+        axios.post(URL, data)
+        .then((response)=> {
+          if(response.status === 201){
+            notify("Signedup  Succussefully");
+            setFormValues({ email: "", password: "", username:"", role:"" });
+          }
+        })
+        .catch((error) => {
+          console.log(error.response.data);
+          badNotify(error.response.data);
+          setFormValues({ email: "", password: "", username:"", role:"" });
+        })
+       
       }
 
   return (
@@ -218,7 +257,7 @@ function Signup() {
                 className="login_btn2"
                 onClick={(e)=>{
                   handleSubmit(e);
-                  notify();
+                  userSignup(e)
                 }}
               >
                 {" "}

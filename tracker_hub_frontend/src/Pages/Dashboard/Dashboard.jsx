@@ -26,7 +26,7 @@ import { Outlet } from "react-router-dom";
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import SettingsIcon from '@material-ui/icons/Settings';
 import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
-
+import {useLocation} from 'react-router-dom';
 
 import "./Dashboard.css"
 
@@ -111,7 +111,7 @@ function Dashboard() {
   
   const icons = [<AssignmentIcon/>, <LockIcon/>, <VideoLibraryIcon/>, <DonutLargeIcon/>];
   const iconsGroup_2 = [<AccountCircleIcon/>, <SettingsIcon/>, <FormatListBulletedIcon/>];
-
+  const location = useLocation();
   return (
     <div>
      
@@ -195,7 +195,7 @@ function Dashboard() {
           )}
           {!enabled && (
             <>
-            <pre> path :: {window.location.pathname} </pre>
+            <pre> path :: {window.location.pathname} <b>{location?.state?.id} {location?.state?.name}</b> </pre>
                      <Typography paragraph>
                        
             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do

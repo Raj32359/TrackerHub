@@ -2,6 +2,7 @@ package com.tarckerhub.model;
 
 import javax.validation.constraints.NotNull;
 
+import org.bson.types.Binary;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -22,5 +23,6 @@ public class User {
 	private String email;
 	private String salt;
 	private String password;
-	private Byte image;
+	private String role;
+	private Binary image;
 }

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState , useEffect} from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -26,6 +26,7 @@ function Navbar() {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
+  const [session, setSession] = useState(false)
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -35,11 +36,17 @@ function Navbar() {
     setAnchorEl(null);
   };
 
+  useEffect(() => {
+    const loginStatus = localStorage.getItem("session");
+    setSession(loginStatus);
+  }, [session])
+  
+
+
   return (
     <div>
       <AppBar position="static" className="appbar_container">
         <Toolbar>
-          
           <Typography variant="h6" className={`${classes.title} appbar_title`}>
             <div onClick={
               ()=>{
@@ -62,7 +69,7 @@ function Navbar() {
               </li>
               <li>
                 <Link href="/contact-us" className="link_tags">
-                Contact us
+                Contact us 
                 </Link>
               </li>
               <li>
@@ -73,47 +80,48 @@ function Navbar() {
             </ul>
           </div>
 
-          {false && (
+          {session === "true" ? (
+            <div>
+            <IconButton
+              aria-label="account of current user"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              onClick={handleMenu}
+              className="custom_userIcon"
+            >
+              <AccountCircle />
+            </IconButton>
+            <Menu
+              id="menu-appbar"
+              anchorEl={anchorEl}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              open={open}
+              onClose={handleClose}
+            >
+              <MenuItem onClick={
+                ()=>{
+                  window.location.href="/dashboard"
+                }
+              }>Dashboard</MenuItem>
+              <MenuItem onClick={handleClose}>My account</MenuItem>
+              <MenuItem onClick={()=>{
+                localStorage.setItem("session", false);
+                window.location.reload();
+              }}>Sign out</MenuItem>
+            </Menu>
+          </div>          
+          ):(
             <div className="btn_Section">
             <Button className="login_btn" href="/login">Login</Button>
             <Button className="signup_btn" href="/signup">Signup</Button>
-          </div>
-          )}
-
-          {true && (
-            <div>
-              <IconButton
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleMenu}
-                className="custom_userIcon"
-              >
-                <AccountCircle />
-              </IconButton>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorEl}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                open={open}
-                onClose={handleClose}
-              >
-                <MenuItem onClick={
-                  ()=>{
-                    window.location.href="/dashboard"
-                  }
-                }>Dashboard</MenuItem>
-                <MenuItem onClick={handleClose}>My account</MenuItem>
-                <MenuItem onClick={handleClose}>Sign out</MenuItem>
-              </Menu>
             </div>
           )}
         </Toolbar>

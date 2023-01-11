@@ -1,0 +1,8 @@
+package com.tarckerhub.model;
+
+public class Course {
+
+	private String courseName;
+	private String proffessorName;
+	private String imageURL;
+}

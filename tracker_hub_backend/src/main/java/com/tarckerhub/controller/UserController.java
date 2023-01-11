@@ -1,8 +1,11 @@
 package com.tarckerhub.controller;
 
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,19 +18,30 @@ import com.tarckerhub.util.HashingPasswordGenerator;
 
 @RestController
 @RequestMapping("/user")
+@CrossOrigin(origins = "http://localhost:9092")
 public class UserController {
 
 	@Autowired
 	private UserRepository userRepository;
 
 	@PostMapping("/signup")
-	public ResponseEntity<?> saveUser(@RequestBody User user) {
-		String salt = HashingPasswordGenerator.getSlat(30);
-		user.setSalt(salt);
-		String mySecuredPassword = HashingPasswordGenerator.generatingSecurePassword(user.getPassword(), salt);
-		user.setPassword(mySecuredPassword);
-		userRepository.save(user);
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+	public ResponseEntity<?> saveUser(@RequestBody User user) throws IOException {
+		User userDetails = userRepository.findUserByEmail(user.getEmail());
+		
+		if(userDetails != null) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("User Already Existed");
+		}
+		
+		if(userDetails == null) {
+			String salt = HashingPasswordGenerator.getSlat(30);
+			user.setSalt(salt);
+			String mySecuredPassword = HashingPasswordGenerator.generatingSecurePassword(user.getPassword(), salt);
+			user.setPassword(mySecuredPassword);
+			userRepository.save(user);
+			return ResponseEntity.status(HttpStatus.CREATED).build();
+		}
+		
+		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
 	}
 
 	@PostMapping("/login")
@@ -41,7 +55,7 @@ public class UserController {
 		if (mySecuredPassword) {
 			return ResponseEntity.ok(user);
 		} else {
-			return ResponseEntity.ok("EMail / Password are Invalid");
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("EMail / Password are Invalid");
 		}
 	}
 

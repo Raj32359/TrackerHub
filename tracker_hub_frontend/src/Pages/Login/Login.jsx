@@ -4,6 +4,8 @@ import { toast, ToastContainer } from "react-toastify";
 import "./Login.css";
 import 'react-toastify/dist/ReactToastify.css';
 import { makeStyles } from '@material-ui/core/styles'
+import { useNavigate } from "react-router";
+import axios from "axios";
 
 const useStyles = makeStyles(theme => ({
   textFieldLabelFocused:{},
@@ -22,6 +24,10 @@ const useStyles = makeStyles(theme => ({
   textFieldFocused:{}
 }));
 
+export let session = "hello"//(msg) => {
+//  console.log("logged in :: ",msg);
+
+
 function Login() {
   const classes = useStyles();
 
@@ -30,8 +36,20 @@ function Login() {
   const [formErrors, setFormErrors] = useState({});
   const [isSubmit, setIsSubmit] = useState(false);
 
-  const notify = () =>
-    toast.error("Please Enter Credentails", {
+  const notify = (msg) =>
+    toast.success(msg, {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+    });
+
+    const badNotify = (msg) =>
+    toast.error(msg, {
       position: "top-right",
       autoClose: 5000,
       hideProgressBar: false,
@@ -77,7 +95,42 @@ function Login() {
           errors.password ="Password should not be more than 10 characters";
         }
         return errors;
-      }      
+      }
+
+      const URL = "http://localhost:9092/user/login";
+      const navigate = useNavigate();
+      
+
+      const userLogin = () => {
+        const data = {
+          email:formValues.email,
+          password:formValues.password
+        }
+        console.log("credentials :",data);
+       
+        axios.post(URL, data)
+        .then((response)=> {
+          if(response.status ===200 && response.data.email === formValues.email){
+            notify("Logged Succussefully");
+            setFormValues({ email: "", password: "" });
+            localStorage.setItem("session", true);
+            setTimeout(() => {
+              window.location.reload();
+            }, 5000);
+          }
+        })
+        .catch((error) => {
+          console.log(error.response.data);
+          badNotify(error.response.data);
+          setFormValues({ email: "", password: "" });
+        })
+       
+      }
+
+      const goDashboard = (e) => {
+        e.preventDefault();
+        navigate("/dashboard", {state:{id:1,name:'sabaoon'}})
+      }
 
   return (
     <div className="login-container">
@@ -153,7 +206,7 @@ function Login() {
                 className="login_btn2"
                 onClick={(e)=>{
                   handleSubmit(e);
-                  notify();
+                    userLogin(e);
                 }}
               >
                 {" "}
