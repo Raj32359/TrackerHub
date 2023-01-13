@@ -1,0 +1,7 @@
+package com.tarckerhub.resposit;
+
+import org.springframework.data.mongodb.repository.MongoRepository;
+
+public interface CourseRepository extends MongoRepository<T, ID> {
+
+}

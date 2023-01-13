@@ -1,11 +1,21 @@
 package com.tarckerhub.model;
 
-import java.util.List;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Document
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Course {
 
+	private String courseId;
 	private String courseName;
-	private String proffessorName;
+	private String professorName;
+	private String courseDuration;
 	private String imageURL;
-	private List<String> courseContent;
+	private String courseContent;
 }

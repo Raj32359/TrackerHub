@@ -114,6 +114,7 @@ function Login() {
             notify("Logged Succussefully");
             setFormValues({ email: "", password: "" });
             localStorage.setItem("session", true);
+            localStorage.setItem("userDetails", JSON.stringify(response.data))
             setTimeout(() => {
               window.location.reload();
             }, 5000);

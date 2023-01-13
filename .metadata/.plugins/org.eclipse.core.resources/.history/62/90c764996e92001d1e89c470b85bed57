@@ -1,0 +1,5 @@
+package com.tarckerhub.service;
+
+public class StorageService {
+
+}

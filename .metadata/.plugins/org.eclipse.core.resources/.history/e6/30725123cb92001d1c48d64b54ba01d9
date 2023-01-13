@@ -1,0 +1,5 @@
+package com.tarckerhub.resposit;
+
+public interface AssignmentRepository {
+
+}

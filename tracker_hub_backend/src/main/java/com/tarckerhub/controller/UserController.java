@@ -18,7 +18,7 @@ import com.tarckerhub.util.HashingPasswordGenerator;
 
 @RestController
 @RequestMapping("/user")
-@CrossOrigin(origins = "http://localhost:9092")
+@CrossOrigin(origins = "http://localhost:9092", maxAge = 36000)
 public class UserController {
 
 	@Autowired

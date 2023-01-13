@@ -7,20 +7,14 @@ import clsx from "clsx";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
 import List from "@material-ui/core/List";
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
-import IconButton from "@material-ui/core/IconButton";
 import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
-import InboxIcon from "@material-ui/icons/MoveToInbox";
-import MailIcon from "@material-ui/icons/Mail";
 import { Button, Link } from "@material-ui/core";
 import { Outlet } from "react-router-dom";
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
@@ -94,6 +88,7 @@ function Dashboard() {
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+  const [userDetails, setUserDetails] = useState({});
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -107,11 +102,15 @@ function Dashboard() {
 
   useEffect(() => {
     if(window.location.pathname !== "/dashboard") setEnabaled(true)
-  }, [enabled])
+    const details = localStorage.getItem("userDetails");
+    setUserDetails(JSON.parse(details));
+  }, [])
   
   const icons = [<AssignmentIcon/>, <LockIcon/>, <VideoLibraryIcon/>, <DonutLargeIcon/>];
   const iconsGroup_2 = [<AccountCircleIcon/>, <SettingsIcon/>, <FormatListBulletedIcon/>];
   const location = useLocation();
+
+
   return (
     <div>
      
@@ -158,8 +157,9 @@ function Dashboard() {
             </Button>
           </div>
           <Divider />
-          <List>
-            {["Assignment", "SecretKey", "Courses", "Graph"].map((text, index) => (
+          {userDetails?.role==="Admin"?(
+            <List>
+            {["CreateCourses", "Courses"].map((text, index) => (
               <ListItem button key={text} className="list_item_link">
                 <ListItemIcon className="list_item_icon">
                   {icons[index]}
@@ -170,9 +170,26 @@ function Dashboard() {
               </ListItem>
             ))}
           </List>
+          ):(null)}
+          
           <Divider />
+          {userDetails?.role==="Admin"?(
           <List>
-            {["Profile", "Settings", "Task"].map((text, index) => (
+            {["Assignment","Previous Assignments", "Course Access Request", "Graph"].map((text, index) => (
+              <ListItem button key={text} className="list_item_link">
+                <ListItemIcon className="list_item_icon">
+                  {icons[index]}
+                </ListItemIcon>
+                <Link href={`/dashboard/${text.toLowerCase()}`} className="list_link">
+                  <ListItemText primary={text} />
+                </Link>                
+              </ListItem>
+            ))}
+          </List>):(null)}
+          <Divider />
+          {userDetails?.role==="Admin"?(
+            <List>
+            {["Profile", "Settings", "View Assignment", "Submitted Assignments", "Task"].map((text, index) => (
               <ListItem button key={text} className="list_item_link">
               <ListItemIcon className="list_item_icon">
                 {iconsGroup_2[index]}
@@ -183,6 +200,7 @@ function Dashboard() {
             </ListItem>
             ))}
           </List>
+          ):(null)}
         </Drawer>
         <main
           className={clsx(classes.content, {
@@ -196,6 +214,7 @@ function Dashboard() {
           {!enabled && (
             <>
             <pre> path :: {window.location.pathname} <b>{location?.state?.id} {location?.state?.name}</b> </pre>
+                     <Typography> <b>{userDetails?.username}</b></Typography>
                      <Typography paragraph>
                        
             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do

@@ -57,6 +57,7 @@ function Signup() {
     const handleChange = (e) => {
       const {name, value } = e.target;
       setFormValues({...formValues, [name]: value})
+      console.log(formValues);
     }
 
     const handleSubmit = (e) => {
@@ -66,9 +67,7 @@ function Signup() {
     }
 
     useEffect(() => {
-      console.log(formErrors);
       if(Object.keys(formErrors).length === 0 && isSubmit) {
-        console.log(formValues);
       }}, [formValues])
 
       const validate = (values) => {
@@ -123,11 +122,6 @@ function Signup() {
 
   return (
     <div className="login-container">
-      {Object.keys(formErrors).length === 0 && isSubmit ? (
-        <div> signed in successfully </div>
-      ):(
-        <pre>{JSON.stringify(formValues, undefined, 2)}</pre>
-      )}
       <Container maxWidth="md" className="main_container">
         <div className="container_items left_item">
           <div className="left_item_mid">

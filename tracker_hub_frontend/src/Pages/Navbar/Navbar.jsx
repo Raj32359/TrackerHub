@@ -73,7 +73,7 @@ function Navbar() {
                 </Link>
               </li>
               <li>
-                <Link href="/courses" className="link_tags">
+                <Link href="/allcourses" className="link_tags">
                 Courses
                 </Link>
               </li>

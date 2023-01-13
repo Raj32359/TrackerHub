@@ -1,13 +1,12 @@
-import { Container, Grid, Typography } from "@material-ui/core";
-import React from "react";
+import { Button, Container, Grid, Typography } from "@material-ui/core";
+import React, { useEffect, useState } from "react";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
-import IconButton from "@material-ui/core/IconButton";
-import SkipPreviousIcon from "@material-ui/icons/SkipPrevious";
-import PlayArrowIcon from "@material-ui/icons/PlayArrow";
-import SkipNextIcon from "@material-ui/icons/SkipNext";
+import "./Courses.css"
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,7 +36,45 @@ const useStyles = makeStyles((theme) => ({
 
 function Courses() {
   const classes = useStyles();
-  const theme = useTheme();
+  const [courses, setCourses] = useState();
+
+  const notify = (msg) =>
+  toast.success(msg, {
+    position: "top-right",
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "colored",
+  });
+
+  const badNotify = (msg) =>
+  toast.error(msg, {
+    position: "top-right",
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "colored",
+  });
+  const APIURL = "http://localhost:9092/course/"
+  useEffect(() => {
+    axios.get(APIURL)
+    .then((response)=> {
+      if(response.status === 200){
+        console.log(response.data);
+        setCourses(response.data);
+      }
+    })
+    .catch((error) => {
+      console.log(error.response.data);
+      badNotify(error.response.data);
+    })
+  }, [])
 
   return (
     <div>
@@ -46,462 +83,38 @@ function Courses() {
         Courses
       </Typography>
       <Grid container spacing={4} justifyContent="center">
-        <Grid item>
+        {
+          courses?.map((item,index)=>{
+            return(
+              <Grid key={index} item>
           <Card className={classes.root}>
             <div className={classes.details}>
               <CardContent className={classes.content}>
-                <Typography component="h5" variant="h5">
-                  Live From Space
+                <Typography component="h5" variant="h5" className="course_Title">
+                {item?.courseName}
                 </Typography>
                 <Typography variant="subtitle1" color="textSecondary">
-                  Mac Miller
+                {item?.professorName}
                 </Typography>
               </CardContent>
               <div className={classes.controls}>
-                <IconButton aria-label="previous">
-                  {theme.direction === "rtl" ? (
-                    <SkipNextIcon />
-                  ) : (
-                    <SkipPreviousIcon />
-                  )}
-                </IconButton>
-                <IconButton aria-label="play/pause">
-                  <PlayArrowIcon className={classes.playIcon} />
-                </IconButton>
-                <IconButton aria-label="next">
-                  {theme.direction === "rtl" ? (
-                    <SkipPreviousIcon />
-                  ) : (
-                    <SkipNextIcon />
-                  )}
-                </IconButton>
+                <Button className="follow_btn">
+                 Follow
+                </Button>
               </div>
             </div>
             <CardMedia
               className={classes.cover}
-              image="https://images.news18.com/ibnlive/uploads/2021/08/spotify-1-16302113003x2.jpg"
-              title="Live from space album cover"
+              image={`${item?.imageURL}`}
+              title="Course ThumbNail"
             />
           </Card>          
         </Grid>
-        <Grid item>
-          <Card className={classes.root}>
-            <div className={classes.details}>
-              <CardContent className={classes.content}>
-                <Typography component="h5" variant="h5">
-                  Live From Space
-                </Typography>
-                <Typography variant="subtitle1" color="textSecondary">
-                  Mac Miller
-                </Typography>
-              </CardContent>
-              <div className={classes.controls}>
-                <IconButton aria-label="previous">
-                  {theme.direction === "rtl" ? (
-                    <SkipNextIcon />
-                  ) : (
-                    <SkipPreviousIcon />
-                  )}
-                </IconButton>
-                <IconButton aria-label="play/pause">
-                  <PlayArrowIcon className={classes.playIcon} />
-                </IconButton>
-                <IconButton aria-label="next">
-                  {theme.direction === "rtl" ? (
-                    <SkipPreviousIcon />
-                  ) : (
-                    <SkipNextIcon />
-                  )}
-                </IconButton>
-              </div>
-            </div>
-            <CardMedia
-              className={classes.cover}
-              image="https://images.news18.com/ibnlive/uploads/2021/08/spotify-1-16302113003x2.jpg"
-              title="Live from space album cover"
-            />
-          </Card>          
-        </Grid>
-        <Grid item>
-          <Card className={classes.root}>
-            <div className={classes.details}>
-              <CardContent className={classes.content}>
-                <Typography component="h5" variant="h5">
-                  Live From Space
-                </Typography>
-                <Typography variant="subtitle1" color="textSecondary">
-                  Mac Miller
-                </Typography>
-              </CardContent>
-              <div className={classes.controls}>
-                <IconButton aria-label="previous">
-                  {theme.direction === "rtl" ? (
-                    <SkipNextIcon />
-                  ) : (
-                    <SkipPreviousIcon />
-                  )}
-                </IconButton>
-                <IconButton aria-label="play/pause">
-                  <PlayArrowIcon className={classes.playIcon} />
-                </IconButton>
-                <IconButton aria-label="next">
-                  {theme.direction === "rtl" ? (
-                    <SkipPreviousIcon />
-                  ) : (
-                    <SkipNextIcon />
-                  )}
-                </IconButton>
-              </div>
-            </div>
-            <CardMedia
-              className={classes.cover}
-              image="https://images.news18.com/ibnlive/uploads/2021/08/spotify-1-16302113003x2.jpg"
-              title="Live from space album cover"
-            />
-          </Card>          
-        </Grid>
-        <Grid item>
-          <Card className={classes.root}>
-            <div className={classes.details}>
-              <CardContent className={classes.content}>
-                <Typography component="h5" variant="h5">
-                  Live From Space
-                </Typography>
-                <Typography variant="subtitle1" color="textSecondary">
-                  Mac Miller
-                </Typography>
-              </CardContent>
-              <div className={classes.controls}>
-                <IconButton aria-label="previous">
-                  {theme.direction === "rtl" ? (
-                    <SkipNextIcon />
-                  ) : (
-                    <SkipPreviousIcon />
-                  )}
-                </IconButton>
-                <IconButton aria-label="play/pause">
-                  <PlayArrowIcon className={classes.playIcon} />
-                </IconButton>
-                <IconButton aria-label="next">
-                  {theme.direction === "rtl" ? (
-                    <SkipPreviousIcon />
-                  ) : (
-                    <SkipNextIcon />
-                  )}
-                </IconButton>
-              </div>
-            </div>
-            <CardMedia
-              className={classes.cover}
-              image="https://images.news18.com/ibnlive/uploads/2021/08/spotify-1-16302113003x2.jpg"
-              title="Live from space album cover"
-            />
-          </Card>          
-        </Grid>
-        <Grid item>
-          <Card className={classes.root}>
-            <div className={classes.details}>
-              <CardContent className={classes.content}>
-                <Typography component="h5" variant="h5">
-                  Live From Space
-                </Typography>
-                <Typography variant="subtitle1" color="textSecondary">
-                  Mac Miller
-                </Typography>
-              </CardContent>
-              <div className={classes.controls}>
-                <IconButton aria-label="previous">
-                  {theme.direction === "rtl" ? (
-                    <SkipNextIcon />
-                  ) : (
-                    <SkipPreviousIcon />
-                  )}
-                </IconButton>
-                <IconButton aria-label="play/pause">
-                  <PlayArrowIcon className={classes.playIcon} />
-                </IconButton>
-                <IconButton aria-label="next">
-                  {theme.direction === "rtl" ? (
-                    <SkipPreviousIcon />
-                  ) : (
-                    <SkipNextIcon />
-                  )}
-                </IconButton>
-              </div>
-            </div>
-            <CardMedia
-              className={classes.cover}
-              image="https://images.news18.com/ibnlive/uploads/2021/08/spotify-1-16302113003x2.jpg"
-              title="Live from space album cover"
-            />
-          </Card>          
-        </Grid>
-        <Grid item>
-          <Card className={classes.root}>
-            <div className={classes.details}>
-              <CardContent className={classes.content}>
-                <Typography component="h5" variant="h5">
-                  Live From Space
-                </Typography>
-                <Typography variant="subtitle1" color="textSecondary">
-                  Mac Miller
-                </Typography>
-              </CardContent>
-              <div className={classes.controls}>
-                <IconButton aria-label="previous">
-                  {theme.direction === "rtl" ? (
-                    <SkipNextIcon />
-                  ) : (
-                    <SkipPreviousIcon />
-                  )}
-                </IconButton>
-                <IconButton aria-label="play/pause">
-                  <PlayArrowIcon className={classes.playIcon} />
-                </IconButton>
-                <IconButton aria-label="next">
-                  {theme.direction === "rtl" ? (
-                    <SkipPreviousIcon />
-                  ) : (
-                    <SkipNextIcon />
-                  )}
-                </IconButton>
-              </div>
-            </div>
-            <CardMedia
-              className={classes.cover}
-              image="https://images.news18.com/ibnlive/uploads/2021/08/spotify-1-16302113003x2.jpg"
-              title="Live from space album cover"
-            />
-          </Card>          
-        </Grid>
-        <Grid item>
-          <Card className={classes.root}>
-            <div className={classes.details}>
-              <CardContent className={classes.content}>
-                <Typography component="h5" variant="h5">
-                  Live From Space
-                </Typography>
-                <Typography variant="subtitle1" color="textSecondary">
-                  Mac Miller
-                </Typography>
-              </CardContent>
-              <div className={classes.controls}>
-                <IconButton aria-label="previous">
-                  {theme.direction === "rtl" ? (
-                    <SkipNextIcon />
-                  ) : (
-                    <SkipPreviousIcon />
-                  )}
-                </IconButton>
-                <IconButton aria-label="play/pause">
-                  <PlayArrowIcon className={classes.playIcon} />
-                </IconButton>
-                <IconButton aria-label="next">
-                  {theme.direction === "rtl" ? (
-                    <SkipPreviousIcon />
-                  ) : (
-                    <SkipNextIcon />
-                  )}
-                </IconButton>
-              </div>
-            </div>
-            <CardMedia
-              className={classes.cover}
-              image="https://images.news18.com/ibnlive/uploads/2021/08/spotify-1-16302113003x2.jpg"
-              title="Live from space album cover"
-            />
-          </Card>          
-        </Grid>
-        <Grid item>
-          <Card className={classes.root}>
-            <div className={classes.details}>
-              <CardContent className={classes.content}>
-                <Typography component="h5" variant="h5">
-                  Live From Space
-                </Typography>
-                <Typography variant="subtitle1" color="textSecondary">
-                  Mac Miller
-                </Typography>
-              </CardContent>
-              <div className={classes.controls}>
-                <IconButton aria-label="previous">
-                  {theme.direction === "rtl" ? (
-                    <SkipNextIcon />
-                  ) : (
-                    <SkipPreviousIcon />
-                  )}
-                </IconButton>
-                <IconButton aria-label="play/pause">
-                  <PlayArrowIcon className={classes.playIcon} />
-                </IconButton>
-                <IconButton aria-label="next">
-                  {theme.direction === "rtl" ? (
-                    <SkipPreviousIcon />
-                  ) : (
-                    <SkipNextIcon />
-                  )}
-                </IconButton>
-              </div>
-            </div>
-            <CardMedia
-              className={classes.cover}
-              image="https://images.news18.com/ibnlive/uploads/2021/08/spotify-1-16302113003x2.jpg"
-              title="Live from space album cover"
-            />
-          </Card>          
-        </Grid>
-        <Grid item>
-          <Card className={classes.root}>
-            <div className={classes.details}>
-              <CardContent className={classes.content}>
-                <Typography component="h5" variant="h5">
-                  Live From Space
-                </Typography>
-                <Typography variant="subtitle1" color="textSecondary">
-                  Mac Miller
-                </Typography>
-              </CardContent>
-              <div className={classes.controls}>
-                <IconButton aria-label="previous">
-                  {theme.direction === "rtl" ? (
-                    <SkipNextIcon />
-                  ) : (
-                    <SkipPreviousIcon />
-                  )}
-                </IconButton>
-                <IconButton aria-label="play/pause">
-                  <PlayArrowIcon className={classes.playIcon} />
-                </IconButton>
-                <IconButton aria-label="next">
-                  {theme.direction === "rtl" ? (
-                    <SkipPreviousIcon />
-                  ) : (
-                    <SkipNextIcon />
-                  )}
-                </IconButton>
-              </div>
-            </div>
-            <CardMedia
-              className={classes.cover}
-              image="https://images.news18.com/ibnlive/uploads/2021/08/spotify-1-16302113003x2.jpg"
-              title="Live from space album cover"
-            />
-          </Card>          
-        </Grid>
-        <Grid item>
-          <Card className={classes.root}>
-            <div className={classes.details}>
-              <CardContent className={classes.content}>
-                <Typography component="h5" variant="h5">
-                  Live From Space
-                </Typography>
-                <Typography variant="subtitle1" color="textSecondary">
-                  Mac Miller
-                </Typography>
-              </CardContent>
-              <div className={classes.controls}>
-                <IconButton aria-label="previous">
-                  {theme.direction === "rtl" ? (
-                    <SkipNextIcon />
-                  ) : (
-                    <SkipPreviousIcon />
-                  )}
-                </IconButton>
-                <IconButton aria-label="play/pause">
-                  <PlayArrowIcon className={classes.playIcon} />
-                </IconButton>
-                <IconButton aria-label="next">
-                  {theme.direction === "rtl" ? (
-                    <SkipPreviousIcon />
-                  ) : (
-                    <SkipNextIcon />
-                  )}
-                </IconButton>
-              </div>
-            </div>
-            <CardMedia
-              className={classes.cover}
-              image="https://images.news18.com/ibnlive/uploads/2021/08/spotify-1-16302113003x2.jpg"
-              title="Live from space album cover"
-            />
-          </Card>          
-        </Grid>
-        <Grid item>
-          <Card className={classes.root}>
-            <div className={classes.details}>
-              <CardContent className={classes.content}>
-                <Typography component="h5" variant="h5">
-                  Live From Space
-                </Typography>
-                <Typography variant="subtitle1" color="textSecondary">
-                  Mac Miller
-                </Typography>
-              </CardContent>
-              <div className={classes.controls}>
-                <IconButton aria-label="previous">
-                  {theme.direction === "rtl" ? (
-                    <SkipNextIcon />
-                  ) : (
-                    <SkipPreviousIcon />
-                  )}
-                </IconButton>
-                <IconButton aria-label="play/pause">
-                  <PlayArrowIcon className={classes.playIcon} />
-                </IconButton>
-                <IconButton aria-label="next">
-                  {theme.direction === "rtl" ? (
-                    <SkipPreviousIcon />
-                  ) : (
-                    <SkipNextIcon />
-                  )}
-                </IconButton>
-              </div>
-            </div>
-            <CardMedia
-              className={classes.cover}
-              image="https://images.news18.com/ibnlive/uploads/2021/08/spotify-1-16302113003x2.jpg"
-              title="Live from space album cover"
-            />
-          </Card>          
-        </Grid>
-        <Grid item>
-          <Card className={classes.root}>
-            <div className={classes.details}>
-              <CardContent className={classes.content}>
-                <Typography component="h5" variant="h5">
-                  Live From Space
-                </Typography>
-                <Typography variant="subtitle1" color="textSecondary">
-                  Mac Miller
-                </Typography>
-              </CardContent>
-              <div className={classes.controls}>
-                <IconButton aria-label="previous">
-                  {theme.direction === "rtl" ? (
-                    <SkipNextIcon />
-                  ) : (
-                    <SkipPreviousIcon />
-                  )}
-                </IconButton>
-                <IconButton aria-label="play/pause">
-                  <PlayArrowIcon className={classes.playIcon} />
-                </IconButton>
-                <IconButton aria-label="next">
-                  {theme.direction === "rtl" ? (
-                    <SkipPreviousIcon />
-                  ) : (
-                    <SkipNextIcon />
-                  )}
-                </IconButton>
-              </div>
-            </div>
-            <CardMedia
-              className={classes.cover}
-              image="https://images.news18.com/ibnlive/uploads/2021/08/spotify-1-16302113003x2.jpg"
-              title="Live from space album cover"
-            />
-          </Card>          
-        </Grid>
+            )
+          })
+        }
+        
+
       </Grid>
       </Container>
     </div>

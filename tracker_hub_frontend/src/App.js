@@ -7,6 +7,10 @@ import Courses from "./Pages/Courses/Courses";
 import Dashboard from "./Pages/Dashboard/Dashboard";
 import Assignments from "./Pages/Assignments/Assignments";
 import Notfound from "./Pages/NotFound/Notfound";
+import AllCourses from "./Pages/Courses/AllCourse";
+import CourseDetails from "./Pages/Courses/CourseDetails";
+import CreateCourses from "./Pages/Courses/CreateCourses";
+import Secretkey from "./Pages/Secretavalut/Secretkey";
 
 function App() {
   return (
@@ -20,11 +24,16 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/contact-us" element={<Contactus />} />
-        <Route path="/courses" element={<Courses />} />
+        <Route path="/allcourses" element={<AllCourses />} />
         <Route path="/assignment" element={<Assignments />} />
+        <Route path="/allcourses/courseDetails/:id" element={<CourseDetails />} />
         <Route path="/dashboard" element={<Dashboard />}>
           <Route path="assignment" element={<Assignments />} />
+          <Route path="courses" element={<Courses />} />
+          <Route path="createcourses" element={<CreateCourses />} />
+          <Route path="secretkey" element={<Secretkey />} />
         </Route>
+
         <Route path="*"  element={<Notfound />}/>
 
         </Routes>

@@ -1,0 +1,23 @@
+cloud:
+  aws:
+    credentials:
+      access-key: AKIAZTJ2QLZ4DLMTMUP2
+      secret-key: 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
+    region:
+      static: us-east-1
+    stack:
+      auto: false
+
+application:
+  bucket:
+    name: trackerhub
+
+
+spring:
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 2MB
+      max-file-size: 5MB
+      max-request-size: 10MB
+

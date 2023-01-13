@@ -1,0 +1,10 @@
+package com.tarckerhub.resposit;
+
+import org.springframework.data.mongodb.repository.MongoRepository;
+
+import com.tarckerhub.model.Assignements;
+import com.tarckerhub.model.Course;
+
+public interface AssignmentRepository extends MongoRepository<Assignements, String> {
+
+}

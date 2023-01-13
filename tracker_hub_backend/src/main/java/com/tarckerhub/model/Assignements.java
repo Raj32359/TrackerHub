@@ -1,10 +1,19 @@
 package com.tarckerhub.model;
 
-import java.sql.Date;
+import java.util.Date;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Assignements {
-
-	private String topicName;
+	private String courseId;
+	private String assigmentId;
+	private String description;
+	private String daysCount;
 	private Date startDate;
 	private Date endDate;
 }
