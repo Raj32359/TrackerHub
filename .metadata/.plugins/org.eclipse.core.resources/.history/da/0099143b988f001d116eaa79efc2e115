@@ -1,5 +1,0 @@
-
-
-spring.data.mongodb.auto-index-creation=true
-spring.data.mongodb.uri=mongodb+srv://Tracker_Hub:E9xJHdUVmRrmw3B3@tracker-hub.v6odbn0.mongodb.net/?retryWrites=true&w=majority
-spring.data.mongodb.database=Tracker_Hub

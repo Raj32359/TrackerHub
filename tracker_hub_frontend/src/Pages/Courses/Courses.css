@@ -39,3 +39,9 @@
     border: 1px solid rgba(0, 0, 0, 0.89) !important;
     padding: 5px;
 }
+
+.cusom_Divider {
+    height: 1px;
+    width: 100%;
+    background-color:  gray;
+}

@@ -21,6 +21,10 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import SettingsIcon from '@material-ui/icons/Settings';
 import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
 import {useLocation} from 'react-router-dom';
+import TurnedInIcon from '@material-ui/icons/TurnedIn';
+import RateReviewOutlinedIcon from '@material-ui/icons/RateReviewOutlined';
+import NoteAddOutlinedIcon from '@material-ui/icons/NoteAddOutlined';
+import LibraryBooksOutlinedIcon from '@material-ui/icons/LibraryBooksOutlined';
 
 import "./Dashboard.css"
 
@@ -106,8 +110,9 @@ function Dashboard() {
     setUserDetails(JSON.parse(details));
   }, [])
   
+  const firstIcons = [<NoteAddOutlinedIcon/>, <LibraryBooksOutlinedIcon/>, <VideoLibraryIcon/>, <DonutLargeIcon/>];
   const icons = [<AssignmentIcon/>, <LockIcon/>, <VideoLibraryIcon/>, <DonutLargeIcon/>];
-  const iconsGroup_2 = [<AccountCircleIcon/>, <SettingsIcon/>, <FormatListBulletedIcon/>];
+  const iconsGroup_2 = [<AccountCircleIcon/>, <SettingsIcon/>, <FormatListBulletedIcon/>, <TurnedInIcon/>, <RateReviewOutlinedIcon/>];
   const location = useLocation();
 
 
@@ -162,7 +167,7 @@ function Dashboard() {
             {["CreateCourses", "Courses"].map((text, index) => (
               <ListItem button key={text} className="list_item_link">
                 <ListItemIcon className="list_item_icon">
-                  {icons[index]}
+                  {firstIcons[index]}
                 </ListItemIcon>
                 <Link href={`/dashboard/${text.toLowerCase()}`} className="list_link">
                   <ListItemText primary={text} />
@@ -173,28 +178,28 @@ function Dashboard() {
           ):(null)}
           
           <Divider />
-          {userDetails?.role==="Admin"?(
+          {userDetails?.role==="Professor"?(
           <List>
-            {["Assignment","Previous Assignments", "Course Access Request", "Graph"].map((text, index) => (
+            {["Assignment","Previous Assignments", "Course Request", "Graph"].map((text, index) => (
               <ListItem button key={text} className="list_item_link">
                 <ListItemIcon className="list_item_icon">
                   {icons[index]}
                 </ListItemIcon>
-                <Link href={`/dashboard/${text.toLowerCase()}`} className="list_link">
+                <Link href={`/dashboard/${text.toLowerCase().replace(/\s+/g, '')}`} className="list_link">
                   <ListItemText primary={text} />
                 </Link>                
               </ListItem>
             ))}
           </List>):(null)}
           <Divider />
-          {userDetails?.role==="Admin"?(
+          {userDetails?.role==="Student"?(
             <List>
-            {["Profile", "Settings", "View Assignment", "Submitted Assignments", "Task"].map((text, index) => (
+            {["Profile", "Following Courses", "View Assignment", "Submitted Assignments", "Task"].map((text, index) => (
               <ListItem button key={text} className="list_item_link">
               <ListItemIcon className="list_item_icon">
                 {iconsGroup_2[index]}
               </ListItemIcon>
-              <Link href={`/dashboard/${text.toLowerCase()}`} className="list_link">
+              <Link href={`/dashboard/${text.toLowerCase().replace(/\s+/g, '')}`} className="list_link">
                 <ListItemText primary={text} />
               </Link>                
             </ListItem>

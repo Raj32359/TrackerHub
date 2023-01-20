@@ -1,5 +1,0 @@
-package com.tarckerhub.config;
-
-public class SimpleCORSFilter {
-
-}

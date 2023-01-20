@@ -97,11 +97,11 @@ function Courses() {
                 {item?.professorName}
                 </Typography>
               </CardContent>
-              <div className={classes.controls}>
+              {/* <div className={classes.controls}>
                 <Button className="follow_btn">
                  Follow
                 </Button>
-              </div>
+              </div> */}
             </div>
             <CardMedia
               className={classes.cover}

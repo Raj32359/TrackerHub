@@ -1,7 +1,7 @@
 import { Button, Grid, TextField, Typography } from "@material-ui/core";
 import { Editor } from "@tinymce/tinymce-react";
 import axios from "axios";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 
 const Assignments = () => {
@@ -45,7 +45,7 @@ const Assignments = () => {
   };
   const [formValues, setFormValues] = useState(initialValues);
   const [description, setDescription] = useState();
-
+  const [courseDetails, setCourseDetails] = useState();
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormValues({ ...formValues, [name]: value });
@@ -57,35 +57,31 @@ const Assignments = () => {
     console.log("real : ", real);
   };
 
-  const APIURL = "http://localhost:9092/assignment/";
+  const APIURL = "http://localhost:9092/course/CourseCollections";
 
-  const addCourse = (e) => {
-    e.preventDefault();
-    const data = {
-      courseId: formValues.courseId,
-      daysCount: formValues.daysCount,
-      description: real,
-      
-    };
-    console.log("credentials :", data);
-    axios.post(APIURL, data)
+  const GetCourseDetails = () => {
+    axios.get(APIURL)
      .then((response) => {
-        if (response.status === 201) {
-          notify("Added Succussefully");
-          setFormValues({ courseId: "", daysCount:"", description: "" });
+        if (response.status === 200) {
+          setCourseDetails(response.data)
+          console.log(response.data)
+
         }
       })
       .catch((error) => {
         console.log(error.response.data);
         badNotify(error.response.data);
         setFormValues({ courseId: "", daysCount:"", description: "" });
-      });
-      
+      });      
   };
+
+  useEffect(() => {
+    GetCourseDetails();
+  }, [])
   return (
     <div>
       <Typography variant="h3" align="center">
-        Assignment
+        Create Assignment
       </Typography>
       <Grid
           container
@@ -112,13 +108,29 @@ const Assignments = () => {
                     CourseId{" "}
                   </label>
                   <TextField
-                    id="courseName"
+                    id="courseId"
                     placeholder="Course Id"
                     variant="outlined"
                     name="courseId"
+                    className="input_field"
+                    select
                     value={formValues.courseId}
                     onChange={handleChange}
-                  />
+                    SelectProps={{
+                      native: true,
+                    }}
+                    helperText="Please select course"
+                    autoComplete="off"
+                  >                  
+                    <option key="" value=""> -- Select Course -- </option>
+                    {courseDetails?.map((item, index)=> {
+                      return(
+                        <option key={item.courseId} value={item.courseId}> {item.courseId} - {item.courseName} </option>
+                      )
+                    })}
+                    
+                    
+                  </TextField>
                 </Grid>
                 <Grid
                   item
@@ -188,8 +200,8 @@ const Assignments = () => {
                 <Button
                   onClick={(e) => {
                     log();
-                    // handleSubmit(e);
-                    addCourse(e);
+                     handleSubmit(e);
+                    
                   }}
                   className="follow_btn "
                 >

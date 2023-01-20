@@ -11,6 +11,12 @@ import AllCourses from "./Pages/Courses/AllCourse";
 import CourseDetails from "./Pages/Courses/CourseDetails";
 import CreateCourses from "./Pages/Courses/CreateCourses";
 import Secretkey from "./Pages/Secretavalut/Secretkey";
+import Task from "./Pages/Task/Task";
+import CourseRequest from "./Pages/CourseRequest/CourseRequest";
+import PreviousAssignments from "./Pages/Assignments/PreviousAssignments";
+import ViewAssignments from "./Pages/Assignments/ViewAssignments";
+import SubmittedAssignments from "./Pages/Assignments/SubmittedAssignments";
+import FollowingCourses from "./Pages/Courses/FollowingCourses";
 
 function App() {
   return (
@@ -32,6 +38,12 @@ function App() {
           <Route path="courses" element={<Courses />} />
           <Route path="createcourses" element={<CreateCourses />} />
           <Route path="secretkey" element={<Secretkey />} />
+          <Route path="task" element={<Task />} />
+          <Route path="courserequest" element={<CourseRequest />} />
+          <Route path="previousassignments" element={<PreviousAssignments />} />
+          <Route path="viewassignment" element={<ViewAssignments />} />
+          <Route path="submittedassignments" element={<SubmittedAssignments />} />
+          <Route path="followingcourses" element={<FollowingCourses />} />
         </Route>
 
         <Route path="*"  element={<Notfound />}/>

@@ -5,7 +5,7 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./Courses.css";
 
 import { Editor } from "@tinymce/tinymce-react";
@@ -15,6 +15,7 @@ import axios from "axios";
 function CreateCourses() {
   const [description, setDescription] = useState();
   const [selectedImage, setSelectedImage] = useState();
+  
   var real = "";
   const editorRef = useRef(null);
   const log = () => {
@@ -56,6 +57,7 @@ function CreateCourses() {
     uploadFile:""
   };
   const [formValues, setFormValues] = useState(initialValues);
+  const [userDetails, setUserDetails] = useState();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -111,6 +113,23 @@ function CreateCourses() {
       });
       
   };
+
+  useEffect(() => {
+    axios.get("http://localhost:9092/user/professors")
+     .then((response) => {
+        if (response.status === 200) {
+          setUserDetails(response.data)
+          console.log(response.data)
+
+        }
+      })
+      .catch((error) => {
+        console.log(error.response.data);
+        badNotify(error.response.data);
+        setFormValues({ courseId: "", daysCount:"", description: "" });
+      });    
+  }, [])
+  
 
   return (
     <div className="CreateCourse_Container">
@@ -193,7 +212,22 @@ function CreateCourses() {
                     name="professorName"
                     value={formValues.professorName}
                     onChange={handleChange}
-                  />
+                    select
+                    SelectProps={{
+                      native: true,
+                    }}
+                    helperText="Please select professor to assign"
+                    autoComplete="off"
+                  >                  
+                    <option key="" value=""> -- Select Professor -- </option>
+                    {userDetails?.map((item, index)=> {
+                      return(
+                        <option key={index} value={item.username}> {item.username} </option>
+                      )
+                    })}
+                    
+                    
+                  </TextField>
                 </Grid>
                 <Grid
                   item

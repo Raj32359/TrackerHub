@@ -116,7 +116,7 @@ function Login() {
             localStorage.setItem("session", true);
             localStorage.setItem("userDetails", JSON.stringify(response.data))
             setTimeout(() => {
-              window.location.reload();
+              window.location.href ="/dashboard";
             }, 5000);
           }
         })
