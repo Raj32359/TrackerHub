@@ -62,7 +62,7 @@ const Task = () => {
     console.log("real : ", real);
   };
 
-  const APIURL = "http://localhost:9092/course/";
+  const APIURL = "http://192.168.1.7:9092/course/";
 
   const addCourse = (e) => {
     e.preventDefault();
@@ -73,7 +73,7 @@ const Task = () => {
       courseContent: real,
     };
 
-    const APIURL = "http://localhost:9092/assignment/";
+    const APIURL = "http://192.168.1.7:9092/assignment/";
     const handleChange = (e) => {
       const { name, value } = e.target;
       setFormValues({ ...formValues, [name]: value });

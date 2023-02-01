@@ -11,12 +11,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FollowRequest {
-	
+
+	private String id;
 	private String requestId;
 	private String courseId;
 	private String courseName;
 	private String useremail;
 	private String activatedKey;
-	private String authenctication="Not Granted";
+	private String authentication;
 
 }

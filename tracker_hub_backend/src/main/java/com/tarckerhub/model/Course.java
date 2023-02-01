@@ -1,5 +1,6 @@
 package com.tarckerhub.model;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.AllArgsConstructor;
@@ -12,6 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Course {
 
+	@Id
 	private String courseId;
 	private String courseName;
 	private String professorName;

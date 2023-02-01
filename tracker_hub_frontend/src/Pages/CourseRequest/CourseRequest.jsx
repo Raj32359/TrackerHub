@@ -2,8 +2,8 @@ import {
   Avatar,
   Button,
   Chip,
-  Container,
   Grid,
+  TextField,
   Typography,
 } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
@@ -37,30 +37,30 @@ const StyledTableRow = withStyles((theme) => ({
   },
 }))(TableRow);
 
-function createData(name, calories, fat, carbs, protein) {
-  return { name, calories, fat, carbs, protein };
-}
-
-const rows = [
-  createData("Frozen yoghurt", 159, 6.0, 24, 4.0),
-  createData("Ice cream sandwich", 237, 9.0, 37, 4.3),
-  createData("Eclair", 262, 16.0, 24, 6.0),
-  createData("Cupcake", 305, 3.7, 67, 4.3),
-  createData("Gingerbread", 356, 16.0, 49, 3.9),
-];
-
 const useStyles = makeStyles({
   table: {
     minWidth: 700,
-    maxHeight:900
+    maxHeight: 900,
   },
 });
 
 const CourseRequest = () => {
   const classes = useStyles();
   const [followRequestDetails, setFollowRequestDetails] = useState();
+  const [course, setCourses] = useState();
+  const [isVisible, setIsVisible] = useState(false);
+  const [userDetails, setUserDetails] = useState();
+  const [followRequestLength, setFollowRequestLength] = useState();
+  const [acceptedCount, setAcceptedCount] = useState(0);
+  const [rejectedCount, setRejectedCount] = useState(0);
+  const [notGrantedCount, setNotGrantedCount] = useState(0);
 
   const { id } = useParams();
+
+  const initialValues = {
+    courseId: "",
+  };
+  const [formValues, setFormValues] = useState(initialValues);
 
   const notify = (msg) =>
     toast.success(msg, {
@@ -86,28 +86,120 @@ const CourseRequest = () => {
       theme: "colored",
     });
 
-  const APIURL = "http://localhost:9092/course/followRequest"
-  const getFollowRequestDetails = () => {
+  const APIURL = "http://192.168.1.7:9092/course/followRequest";
+  const getFollowRequestDetails = (courseId, authentication) => {
     axios
-      .get(APIURL)
+      .get(`${APIURL}/${courseId}/${authentication}`)
       .then((response) => {
         if (response.status === 200) {
-          console.log(response.data);
           setFollowRequestDetails(response.data);
-          console.log(response.data);
         }
       })
       .catch((error) => {
-        console.log(error.response.data);
         badNotify(error.response.data);
       });
+  };
+
+  const APIURL2 = "http://192.168.1.7:9092/course/distinctCourse";
+  const getDestinctCourseByProfessorName = (professorName) => {
+    axios
+      .get(`${APIURL2}/${professorName}`)
+      .then((response) => {
+        if (response.status === 200) {
+          setCourses(response.data);
+        }
+      })
+      .catch((error) => {
+        badNotify(error.response.data);
+      });
+  };
+
+  const APIURL5 = "http://192.168.1.7:9092/course/followRequest";
+  const GetRequestCount = (courseId) =>{
+    axios
+    .get(`${APIURL5}/${courseId}/all`)
+    .then((response) => {
+      if (response.status === 200) {
+        const count = response.data;
+         const acceptedCounts = count.filter(function(item){
+         return item?.authentication === "Accepted"
+        })
+        const rejectedCounts = count.filter(function(item){
+          return item?.authentication === "Rejected"
+         })
+         const notGrantedCounts = count.filter(function(item){
+          return item?.authentication === "NotGranted"
+         })
+        setAcceptedCount(acceptedCounts.length);
+        setRejectedCount(rejectedCounts.length);
+        setNotGrantedCount(notGrantedCounts?.length);
+        console.log("Accepted Count :: "+ acceptedCount?.length);
+      }
+    })
+    .catch((error) => {
+      badNotify(error.response.data);
+    });
   }
 
-  useEffect(() => {
-    getFollowRequestDetails();
+  const handleChange = (e, courseId) => {
+    console.log("course Id :: "+courseId);
+    getFollowRequestDetails(courseId, "NotGranted");
+    GetRequestCount(courseId);
+    
+  };
+
+  useEffect(() => {    
+    const details = JSON.parse(localStorage.getItem("userDetails"));
+    setUserDetails(details);
+    getDestinctCourseByProfessorName(details?.email);
+  }, []);
+
   
-  }, [])
-  
+
+
+  const APIURL3 = "http://192.168.1.7:9092/request/accept";
+
+  const postRequestAcceptance = (requestId, email,index) =>{
+    console.log("index ::"+index);
+    
+    axios
+    .post(`${APIURL3}/${email}`, {
+      requestId:`${requestId}`
+    })
+    .then((response) => {
+      if (response.status === 200) {
+        console.log(response);
+        notify(response);
+        setIsVisible(true);
+      }
+    })
+    .catch((error) => {
+      console.log(error.response.data);
+      badNotify(error.response.data);
+    });
+  }
+
+  const APIURL4 = "http://192.168.1.7:9092/request/reject";
+
+  const postRequestReject = (requestId, email,index) =>{
+    console.log("index ::"+index);
+    
+    axios
+    .post(`${APIURL4}/${email}`, {
+      requestId:`${requestId}`
+    })
+    .then((response) => {
+      if (response.status === 200) {
+        console.log(response);
+        notify(response);
+        setIsVisible(true);
+      }
+    })
+    .catch((error) => {
+      console.log(error.response.data);
+      badNotify(error.response.data);
+    });
+  }  
 
   return (
     <div>
@@ -121,22 +213,54 @@ const CourseRequest = () => {
         justifyContent="center"
         alignItems="center"
       >
+        <Grid xs={12} md={12}>
+          <TextField
+            id="courseId"
+            placeholder="course Id"
+            variant="outlined"
+            name="courseId"
+            onChange={e=>{
+              handleChange(e, e.target.value);
+
+            }}
+            select
+            SelectProps={{
+              native: true,
+            }}
+            helperText="Please select course to check request"
+            autoComplete="off"
+          >
+            <option key="" value="">
+              {" "}
+              -- Select Course --{" "}
+            </option>
+            {course?.map((item, index) => {
+              return (
+                <option key={index} value={item?.courseId}>
+                  {" "}
+                  {item?.courseId} - {item?.courseName}{" "}
+                </option>
+              );
+            })}
+          </TextField>
+        </Grid>
         <Grid item spacing={4}>
           <Chip
-            avatar={<Avatar>69</Avatar>}
-            label="Request"
-            color="secondary"
-          /> &nbsp;
-          <Chip
-            avatar={<Avatar>85</Avatar>}
-            label="Accepted"
+            label="Courses"
+            avatar={<Avatar>{course?.length}</Avatar>}
             color="primary"
-          />
+          />{" "}
           &nbsp;
           <Chip
-            avatar={<Avatar>20</Avatar>}
-            label="Rejected"
-          />
+            avatar={<Avatar>{followRequestDetails?.length}</Avatar>}
+            label="Request"
+            color="secondary"
+          />{" "}
+          &nbsp;
+          <Chip avatar={<Avatar>{notGrantedCount+acceptedCount+rejectedCount}</Avatar>} label="Total Request" /> &nbsp;
+          <Chip avatar={<Avatar>{acceptedCount}</Avatar>} label="Accepted" color="primary" />
+          &nbsp;
+          <Chip avatar={<Avatar>{rejectedCount}</Avatar>} color="secondary" label="Rejected" />
         </Grid>
         <TableContainer component={Paper}>
           <Table className={classes.table} aria-label="customized table">
@@ -150,6 +274,9 @@ const CourseRequest = () => {
             </TableHead>
             <TableBody>
               {followRequestDetails?.map((row, i) => (
+                (isVisible)?(
+                  null
+                ):(
                 <StyledTableRow key={i}>
                   <StyledTableCell component="th" scope="row">
                     {row?.requestId}
@@ -161,15 +288,22 @@ const CourseRequest = () => {
                     {row?.useremail}
                   </StyledTableCell>
                   <StyledTableCell align="right">
-                    <Button variant="contained" color="primary">
+                    <Button variant="contained" color="primary"
+                    onClick={()=>{
+                      postRequestAcceptance(row?.requestId,row?.useremail, i);
+                    }}>
                       Accept
                     </Button>{" "}
                     &nbsp; &nbsp;
-                    <Button variant="contained" color="secondary">
+                    <Button variant="contained" color="secondary"
+                    onClick={()=>{
+                      postRequestReject(row?.requestId,row?.useremail, i);
+                    }}>
                       Reject
                     </Button>
                   </StyledTableCell>
                 </StyledTableRow>
+                )
               ))}
             </TableBody>
           </Table>
@@ -177,6 +311,6 @@ const CourseRequest = () => {
       </Grid>
     </div>
   );
-}
+};
 
 export default CourseRequest;

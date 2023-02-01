@@ -45,3 +45,8 @@
     width: 100%;
     background-color:  gray;
 }
+
+.NotGranted {
+    cursor: not-allowed !important;
+    background-color:  gray !important;
+}

@@ -73,7 +73,7 @@ function CreateCourses() {
     console.log("real : ", real);
   };
 
-  const APIURL = "http://localhost:9092/course/";
+  const APIURL = "http://192.168.1.7:9092/course/";
 
   const addCourse = (e) => {
     e.preventDefault();
@@ -115,7 +115,7 @@ function CreateCourses() {
   };
 
   useEffect(() => {
-    axios.get("http://localhost:9092/user/professors")
+    axios.get("http://192.168.1.7:9092/user/professors")
      .then((response) => {
         if (response.status === 200) {
           setUserDetails(response.data)
@@ -125,8 +125,7 @@ function CreateCourses() {
       })
       .catch((error) => {
         console.log(error.response.data);
-        badNotify(error.response.data);
-        setFormValues({ courseId: "", daysCount:"", description: "" });
+        setUserDetails(error.response.data);
       });    
   }, [])
   
@@ -144,7 +143,12 @@ function CreateCourses() {
           justifyContent="center"
           alignItems="center"
         >
-          <form noValidate autoComplete="off">
+          {(userDetails === "No Professor Found.")?(
+          <Typography variant="h5" align="center">
+             No Professor Found.
+           </Typography>
+          ):(
+            <form noValidate autoComplete="off">
             <Grid item xs={12} md={12} lg={12} sm={12} style={{display:"flex"}}>
               <Grid xs={9} md={9} lg={9} sm={9}>
                 <Grid
@@ -222,7 +226,7 @@ function CreateCourses() {
                     <option key="" value=""> -- Select Professor -- </option>
                     {userDetails?.map((item, index)=> {
                       return(
-                        <option key={index} value={item.username}> {item.username} </option>
+                        <option key={index} value={item.email}> {item.username} </option>
                       )
                     })}
                     
@@ -317,6 +321,8 @@ function CreateCourses() {
               </div>
             </Grid>
           </form>
+          )}
+          
         </Grid>
       </Container>
       <ToastContainer

@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class StorageService {
 	
-	private String bucketName = "trackerhub";
+	private String bucketName = "trackerhuub";
 	
 	@Autowired
 	private AmazonS3 s3Client;

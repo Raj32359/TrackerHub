@@ -1,12 +1,12 @@
 package com.tarckerhub.controller;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import javax.websocket.server.PathParam;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Field;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
@@ -23,13 +23,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.amazonaws.Response;
+import com.tarckerhub.model.Assignements;
 import com.tarckerhub.model.Course;
 import com.tarckerhub.model.FollowRequest;
 import com.tarckerhub.model.RequestAcceptance;
+import com.tarckerhub.model.User;
 import com.tarckerhub.resposit.CourseRepository;
 import com.tarckerhub.resposit.CourseRequestRepository;
 import com.tarckerhub.resposit.RequestAcceptanceRepository;
+import com.tarckerhub.resposit.UserRepository;
 import com.tarckerhub.service.CourseService;
 import com.tarckerhub.service.StorageService;
 
@@ -37,6 +39,9 @@ import com.tarckerhub.service.StorageService;
 @RequestMapping("/course")
 @CrossOrigin(origins = "http://localhost:9092", maxAge = 36000)
 public class CourseController {
+
+	@Autowired
+	private UserRepository userRepository;
 
 	@Autowired
 	private CourseRepository courseRepository;
@@ -63,8 +68,13 @@ public class CourseController {
 		String uploadFile = service.uploadFile(file);
 		Course finalCourse = courseService.gson(course);
 		finalCourse.setCourseId(serialID);
-		finalCourse.setImageURL("https://trackerhub.s3.amazonaws.com/" + uploadFile);
+		finalCourse.setImageURL("https://trackerhuub.s3.amazonaws.com/" + uploadFile);
 		Course savedCourse = courseRepository.save(finalCourse);
+		User user = userRepository.findUserByEmail(finalCourse.getProfessorName());
+		List<String> list = new ArrayList<>();
+		list.add(savedCourse.getCourseId());
+		user.setCourses(list);
+		userRepository.save(user);
 
 		if (savedCourse != null) {
 			return ResponseEntity.status(HttpStatus.CREATED).body(finalCourse);
@@ -106,6 +116,28 @@ public class CourseController {
 
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body("Evaluating Data....");
 	}
+	
+	@GetMapping("/student/{email}")
+	public ResponseEntity<?> getStudentCourses(@PathVariable("email") String email) {
+		
+		User user = userRepository.findUserByEmail(email);
+		List<Course> list = new ArrayList<>();
+		if(user.getCourses() !=null) {
+			for (int i = 0; i < user.getCourses().size(); i++) {
+				Course course = courseRepository.findbyCourseId(user.getCourses().get(i));
+				list.add(course);
+			}
+		}
+		if (list.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No Courses Found.");
+		}
+
+		if (!list.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.OK).body(list);
+		}
+
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body("Evaluating Data....");
+	}
 
 	@DeleteMapping("/{serialId}")
 	public ResponseEntity<?> deleteCourseBySerialId(@PathVariable("serialId") String serialId) {
@@ -130,15 +162,14 @@ public class CourseController {
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body("Evalauting Data.");
 
 	}
-	
+
 	@GetMapping("/follow/{courseId}/{email}")
-	public ResponseEntity<?> followProcess(@PathVariable("courseId" ) String courseId, @PathVariable("email") String email){
-		FollowRequest details = courseRequestRepository.getExistedDetails(courseId,
-				email);
-		
+	public ResponseEntity<?> followProcess(@PathVariable("courseId") String courseId,
+			@PathVariable("email") String email) {
+		FollowRequest details = courseRequestRepository.getExistedDetails(courseId, email);
+
 		if (details == null) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND)
-					.body("You are Not yet Requested to Follow.");
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("You are Not yet Requested to Follow.");
 		}
 
 		if (details != null) {
@@ -154,8 +185,9 @@ public class CourseController {
 		followRequest.setRequestId(requestId);
 		FollowRequest details = courseRequestRepository.getExistedDetails(followRequest.getCourseId(),
 				followRequest.getUseremail());
+		followRequest.setAuthentication("NotGranted");
 		if (details == null) {
-			courseRequestRepository.save(followRequest);
+			FollowRequest request = courseRequestRepository.save(followRequest);
 			return ResponseEntity.status(HttpStatus.CREATED)
 					.body("Request sent...!\nyou will get the access with in 24hrs.");
 
@@ -168,9 +200,10 @@ public class CourseController {
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body("Evaluating Data.");
 	}
 
-	@GetMapping("/followRequest")
-	public ResponseEntity<?> GetRequestToFollow() {
-		List<FollowRequest> list = courseRequestRepository.findAll();
+	@GetMapping("/followRequest/{courseId}/{authenctication}")
+	public ResponseEntity<?> GetRequestToFollow(@PathVariable("courseId") String courseId,
+			@PathVariable("authentication") String authentication) {
+		List<FollowRequest> list = courseRequestRepository.findByRequestIdAndAuthenctication(courseId, authentication);
 
 		if (list == null) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No Recent Request.");
@@ -183,23 +216,57 @@ public class CourseController {
 		return ResponseEntity.ok(null);
 	}
 
-	@PostMapping("/sendActivatekey")
-	public ResponseEntity<?> SendActivateKey(@PathVariable("requestId") String requestId,
-			@RequestParam("activatedKey") String activatedKey, @RequestParam("useremail") String useremail) {
-		FollowRequest details = courseRequestRepository.getExistedDetails(requestId, useremail);
-		RequestAcceptance acceptance = requestAcceptanceRepository.getExistedDetails(requestId);
+	@GetMapping("/followRequest/{courseId}/all")
+	public ResponseEntity<?> GetAllRequestToFollow(@PathVariable("courseId") String courseId) {
+		List<FollowRequest> list = courseRequestRepository.findByCourseId(courseId);
 
-		if (details != null && acceptance != null) {
-			if (activatedKey == acceptance.getGeneratedKey()) {
-				details.setActivatedKey(activatedKey);
-				details.setAuthenctication("Granted");
-				courseRequestRepository.save(details);
-				return ResponseEntity.status(HttpStatus.OK).body("Congratulations !");
+		if (list == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No Recent Request.");
+		}
+
+		if (list != null) {
+			return ResponseEntity.status(HttpStatus.OK).body(list);
+		}
+
+		return ResponseEntity.ok(null);
+	}
+
+	@PostMapping("/sendActivatekey/{courseId}/{activatedKey}/{useremail}")
+	public ResponseEntity<?> SendActivateKey(@PathVariable("courseId") String courseId,
+			@PathVariable("activatedKey") String activatedKey, @PathVariable("useremail") String useremail) {
+		FollowRequest details = courseRequestRepository.getExistedDetails(courseId, useremail);
+		RequestAcceptance acceptance = new RequestAcceptance();
+		if (details != null) {
+			details.setActivatedKey(activatedKey);
+			acceptance = requestAcceptanceRepository.getExistedDetails(details.getRequestId());
+		}
+
+		if (details != null) {
+			if (acceptance != null) {
+				if (details.getActivatedKey().equals(acceptance.getGeneratedKey())) {
+					details.setActivatedKey(activatedKey + " | Verified");
+					courseRequestRepository.save(details);
+					User user = userRepository.findUserByEmail(useremail);
+					if (user != null) {
+						if (user.getCourses() != null) {
+							user.getCourses().add(courseId);
+						}
+						if (user.getCourses() == null) {
+							List<String> list = new ArrayList<>();
+							list.add(courseId);
+							user.setCourses(list);
+							userRepository.save(user);
+						}
+					}
+
+					return ResponseEntity.status(HttpStatus.OK).body("Congratulations !");
+				}
+				if (!details.getActivatedKey().equals(acceptance.getGeneratedKey())) {
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+							.body("Invalid !\nyou have enetered wrong key. Please try again");
+				}
 			}
-			if (activatedKey != acceptance.getGeneratedKey()) {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-						.body("Invalid !\nyou have enetered wrong key. Please try again");
-			}
+
 		}
 
 		if (details == null) {
@@ -213,4 +280,17 @@ public class CourseController {
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body("Evaluating Data.");
 
 	}
+
+	@GetMapping("/distinctCourse/{professor}")
+	public ResponseEntity<?> getDestinctCourseByProfessorName(@PathVariable("professor") String professor) {
+		Query query = new Query();
+		query.addCriteria(Criteria.where("professorName").is(professor));
+		query.fields().include("courseName").include("courseId");
+//		List<Course> list = mongoTemplate.query(Course.class).distinct("courseName").as(Course.class).all();
+//		List<String> findDistinct = mongoTemplate.findDistinct(query, "courseName", Course.class, String.class);
+		List<Course> list = mongoTemplate.find(query, Course.class);
+
+		return ResponseEntity.status(HttpStatus.OK).body(list);
+	}
+
 }

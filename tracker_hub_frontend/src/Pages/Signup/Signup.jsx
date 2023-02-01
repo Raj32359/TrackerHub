@@ -93,7 +93,7 @@ function Signup() {
         }
         return errors;
       }
-      const URL = "http://localhost:9092/user/signup";
+      const URL = "http://192.168.1.7:9092/user/signup";
 
       const userSignup = (e) => {
         e.preventDefault();

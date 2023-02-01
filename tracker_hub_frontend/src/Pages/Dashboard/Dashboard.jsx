@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import AssignmentIcon from '@material-ui/icons/Assignment';
-import LockIcon from '@material-ui/icons/Lock';
-import VideoLibraryIcon from '@material-ui/icons/VideoLibrary';
-import DonutLargeIcon from '@material-ui/icons/DonutLarge';
+import AssignmentIcon from "@material-ui/icons/Assignment";
+import LockIcon from "@material-ui/icons/Lock";
+import VideoLibraryIcon from "@material-ui/icons/VideoLibrary";
+import DonutLargeIcon from "@material-ui/icons/DonutLarge";
 import clsx from "clsx";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
@@ -17,22 +17,30 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import { Button, Link } from "@material-ui/core";
 import { Outlet } from "react-router-dom";
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import SettingsIcon from '@material-ui/icons/Settings';
-import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
-import {useLocation} from 'react-router-dom';
-import TurnedInIcon from '@material-ui/icons/TurnedIn';
-import RateReviewOutlinedIcon from '@material-ui/icons/RateReviewOutlined';
-import NoteAddOutlinedIcon from '@material-ui/icons/NoteAddOutlined';
-import LibraryBooksOutlinedIcon from '@material-ui/icons/LibraryBooksOutlined';
+import AccountCircleIcon from "@material-ui/icons/AccountCircle";
+import SettingsIcon from "@material-ui/icons/Settings";
+import FormatListBulletedIcon from "@material-ui/icons/FormatListBulleted";
+import { useLocation } from "react-router-dom";
+import TurnedInIcon from "@material-ui/icons/TurnedIn";
+import RateReviewOutlinedIcon from "@material-ui/icons/RateReviewOutlined";
+import NoteAddOutlinedIcon from "@material-ui/icons/NoteAddOutlined";
+import LibraryBooksOutlinedIcon from "@material-ui/icons/LibraryBooksOutlined";
+import Grid from "@material-ui/core/Grid";
+import Paper from "@material-ui/core/Paper";
 
-import "./Dashboard.css"
+import "./Dashboard.css";
 
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
+    flexGrow: 1,
+  },
+  paper: {
+    padding: theme.spacing(2),
+    textAlign: "center",
+    color: theme.palette.text.secondary,
   },
   appBar: {
     transition: theme.transitions.create(["margin", "width"], {
@@ -105,20 +113,35 @@ function Dashboard() {
   const [enabled, setEnabaled] = useState(false);
 
   useEffect(() => {
-    if(window.location.pathname !== "/dashboard") setEnabaled(true)
+    if (window.location.pathname !== "/dashboard") setEnabaled(true);
     const details = localStorage.getItem("userDetails");
     setUserDetails(JSON.parse(details));
-  }, [])
-  
-  const firstIcons = [<NoteAddOutlinedIcon/>, <LibraryBooksOutlinedIcon/>, <VideoLibraryIcon/>, <DonutLargeIcon/>];
-  const icons = [<AssignmentIcon/>, <LockIcon/>, <VideoLibraryIcon/>, <DonutLargeIcon/>];
-  const iconsGroup_2 = [<AccountCircleIcon/>, <SettingsIcon/>, <FormatListBulletedIcon/>, <TurnedInIcon/>, <RateReviewOutlinedIcon/>];
-  const location = useLocation();
+  }, []);
 
+  const firstIcons = [
+    <NoteAddOutlinedIcon />,
+    <LibraryBooksOutlinedIcon />,
+    <VideoLibraryIcon />,
+    <DonutLargeIcon />,
+  ];
+  const icons = [
+    <AssignmentIcon />,
+    <LockIcon />,
+    <VideoLibraryIcon />,
+    <DonutLargeIcon />,
+    <AccountCircleIcon />,
+  ];
+  const iconsGroup_2 = [
+    <AccountCircleIcon />,
+    <SettingsIcon />,
+    <FormatListBulletedIcon />,
+    <TurnedInIcon />,
+    <RateReviewOutlinedIcon />,
+  ];
+  const location = useLocation();
 
   return (
     <div>
-     
       <div>
         {" "}
         <Button
@@ -128,14 +151,11 @@ function Dashboard() {
           edge="start"
           className={clsx(classes.menuButton, open && classes.hide)}
         >
-          <MenuIcon /> 
-          <Typography variant="h6">
-            Menu
-          </Typography>
+          <MenuIcon />
+          <Typography variant="h6">Menu</Typography>
         </Button>
       </div>
       <div className={classes.root}>
-        
         <CssBaseline />
 
         <Drawer
@@ -151,9 +171,11 @@ function Dashboard() {
             <Button onClick={handleDrawerClose} className="link_title_header">
               {theme.direction === "ltr" ? (
                 <span>
-                  <Typography variant="h6" align="center" className="quickLink"> Quick Links <ChevronLeftIcon /> </Typography> 
+                  <Typography variant="h6" align="center" className="quickLink">
+                    {" "}
+                    Quick Links <ChevronLeftIcon />{" "}
+                  </Typography>
                 </span>
-                
               ) : (
                 <span>
                   aa <ChevronLeftIcon />
@@ -162,50 +184,76 @@ function Dashboard() {
             </Button>
           </div>
           <Divider />
-          {userDetails?.role==="Admin"?(
+          {userDetails?.role === "Admin" ? (
             <List>
-            {["CreateCourses", "Courses"].map((text, index) => (
-              <ListItem button key={text} className="list_item_link">
-                <ListItemIcon className="list_item_icon">
-                  {firstIcons[index]}
-                </ListItemIcon>
-                <Link href={`/dashboard/${text.toLowerCase()}`} className="list_link">
-                  <ListItemText primary={text} />
-                </Link>                
-              </ListItem>
-            ))}
-          </List>
-          ):(null)}
-          
+              {["CreateCourses", "Courses"].map((text, index) => (
+                <ListItem button key={text} className="list_item_link">
+                  <ListItemIcon className="list_item_icon">
+                    {firstIcons[index]}
+                  </ListItemIcon>
+                  <Link
+                    href={`/dashboard/${text.toLowerCase()}`}
+                    className="list_link"
+                  >
+                    <ListItemText primary={text} />
+                  </Link>
+                </ListItem>
+              ))}
+            </List>
+          ) : null}
+
           <Divider />
-          {userDetails?.role==="Professor"?(
-          <List>
-            {["Assignment","Previous Assignments", "Course Request", "Graph"].map((text, index) => (
-              <ListItem button key={text} className="list_item_link">
-                <ListItemIcon className="list_item_icon">
-                  {icons[index]}
-                </ListItemIcon>
-                <Link href={`/dashboard/${text.toLowerCase().replace(/\s+/g, '')}`} className="list_link">
-                  <ListItemText primary={text} />
-                </Link>                
-              </ListItem>
-            ))}
-          </List>):(null)}
-          <Divider />
-          {userDetails?.role==="Student"?(
+          {userDetails?.role === "Professor" ? (
             <List>
-            {["Profile", "Following Courses", "View Assignment", "Submitted Assignments", "Task"].map((text, index) => (
-              <ListItem button key={text} className="list_item_link">
-              <ListItemIcon className="list_item_icon">
-                {iconsGroup_2[index]}
-              </ListItemIcon>
-              <Link href={`/dashboard/${text.toLowerCase().replace(/\s+/g, '')}`} className="list_link">
-                <ListItemText primary={text} />
-              </Link>                
-            </ListItem>
-            ))}
-          </List>
-          ):(null)}
+              {[
+                "Assignment",
+                "Previous Assignments",
+                "Course Request",
+                "Graph",
+                "Profile",
+              ].map((text, index) => (
+                <ListItem button key={text} className="list_item_link">
+                  <ListItemIcon className="list_item_icon">
+                    {icons[index]}
+                  </ListItemIcon>
+                  <Link
+                    href={`/dashboard/${text
+                      .toLowerCase()
+                      .replace(/\s+/g, "")}`}
+                    className="list_link"
+                  >
+                    <ListItemText primary={text} />
+                  </Link>
+                </ListItem>
+              ))}
+            </List>
+          ) : null}
+          <Divider />
+          {userDetails?.role === "Student" ? (
+            <List>
+              {[
+                "Profile",
+                "Following Courses",
+                "View Assignment",
+                "Submitted Assignments",
+                "Task",
+              ].map((text, index) => (
+                <ListItem button key={text} className="list_item_link">
+                  <ListItemIcon className="list_item_icon">
+                    {iconsGroup_2[index]}
+                  </ListItemIcon>
+                  <Link
+                    href={`/dashboard/${text
+                      .toLowerCase()
+                      .replace(/\s+/g, "")}`}
+                    className="list_link"
+                  >
+                    <ListItemText primary={text} />
+                  </Link>
+                </ListItem>
+              ))}
+            </List>
+          ) : null}
         </Drawer>
         <main
           className={clsx(classes.content, {
@@ -213,49 +261,135 @@ function Dashboard() {
           })}
         >
           <div className={classes.drawerHeader} />
-          {enabled && (
-            <Outlet />
-          )}
+          {enabled && <Outlet />}
           {!enabled && (
             <>
-            <pre> path :: {window.location.pathname} <b>{location?.state?.id} {location?.state?.name}</b> </pre>
-                     <Typography> <b>{userDetails?.username}</b></Typography>
-                     <Typography paragraph>
-                       
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Rhoncus
-            dolor purus non enim praesent elementum facilisis leo vel. Risus at
-            ultrices mi tempus imperdiet. Semper risus in hendrerit gravida
-            rutrum quisque non tellus. Convallis convallis tellus id interdum
-            velit laoreet id donec ultrices. Odio morbi quis commodo odio aenean
-            sed adipiscing. Amet nisl suscipit adipiscing bibendum est ultricies
-            integer quis. Cursus euismod quis viverra nibh cras. Metus vulputate
-            eu scelerisque felis imperdiet proin fermentum leo. Mauris commodo
-            quis imperdiet massa tincidunt. Cras tincidunt lobortis feugiat
-            vivamus at augue. At augue eget arcu dictum varius duis at
-            consectetur lorem. Velit sed ullamcorper morbi tincidunt. Lorem
-            donec massa sapien faucibus et molestie ac.
-          </Typography>
-          <Typography paragraph>
-            Consequat mauris nunc congue nisi vitae suscipit. Fringilla est
-            ullamcorper eget nulla facilisi etiam dignissim diam. Pulvinar
-            elementum integer enim neque volutpat ac tincidunt. Ornare
-            suspendisse sed nisi lacus sed viverra tellus. Purus sit amet
-            volutpat consequat mauris. Elementum eu facilisis sed odio morbi.
-            Euismod lacinia at quis risus sed vulputate odio. Morbi tincidunt
-            ornare massa eget egestas purus viverra accumsan in. In hendrerit
-            gravida rutrum quisque non tellus orci ac. Pellentesque nec nam
-            aliquam sem et tortor. Habitant morbi tristique senectus et.
-            Adipiscing elit duis tristique sollicitudin nibh sit. Ornare aenean
-            euismod elementum nisi quis eleifend. Commodo viverra maecenas
-            accumsan lacus vel facilisis. Nulla posuere sollicitudin aliquam
-            ultrices sagittis orci a.
-          </Typography>
-
+              <div className={classes.root}>
+                {userDetails?.role==="Admin"?(<Grid container spacing={3}>
+                  <Grid item xs={12}>
+                    <Paper className={classes.paper}>
+                      <Typography variant="h5">
+                        Welcome to the Dashboard
+                      </Typography>
+                    </Paper>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Paper className={classes.paper}>
+                      <Typography variant="h6">No. of Courses Created</Typography>
+                      <Typography variant="body1">
+                        6
+                      </Typography>
+                    </Paper>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Paper className={classes.paper}>
+                      <Typography variant="h6">No. of Professors Registered</Typography>
+                      <Typography variant="body1">
+                        5
+                      </Typography>
+                    </Paper>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Paper className={classes.paper}>
+                      <Typography variant="h6">No. of Students Registered</Typography>
+                      <Typography variant="body1">
+                        120
+                      </Typography>
+                    </Paper>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Paper className={classes.paper}>
+                      <Typography variant="h6">Others</Typography>
+                      <Typography variant="body1">
+                        0
+                      </Typography>
+                    </Paper>
+                  </Grid>
+                </Grid>):(userDetails?.role==="Professor"?(<Grid container spacing={3}>
+                  <Grid item xs={12}>
+                    <Paper className={classes.paper}>
+                      <Typography variant="h5">
+                        Welcome to the Dashboard
+                      </Typography>
+                    </Paper>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Paper className={classes.paper}>
+                      <Typography variant="h6">No. of Courses Allotted</Typography>
+                      <Typography variant="body1">
+                        3
+                      </Typography>
+                    </Paper>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Paper className={classes.paper}>
+                      <Typography variant="h6">No of Assignments Released</Typography>
+                      <Typography variant="body1">
+                        2
+                      </Typography>
+                    </Paper>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Paper className={classes.paper}>
+                      <Typography variant="h6">Total No. of Student Registred </Typography>
+                      <Typography variant="body1">
+                        65
+                      </Typography>
+                    </Paper>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Paper className={classes.paper}>
+                      <Typography variant="h6">No. of Student for Courses Accesses Wait List</Typography>
+                      <Typography variant="body1">
+                        12
+                      </Typography>
+                    </Paper>
+                  </Grid>
+                </Grid>):(userDetails?.role==="Student"?(<Grid container spacing={3}>
+                  <Grid item xs={12}>
+                    <Paper className={classes.paper}>
+                      <Typography variant="h5">
+                        Welcome to the Dashboard
+                      </Typography>
+                    </Paper>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Paper className={classes.paper}>
+                      <Typography variant="h6">Following Courses</Typography>
+                      <Typography variant="body1">
+                        2
+                      </Typography>
+                    </Paper>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Paper className={classes.paper}>
+                      <Typography variant="h6">No. of Assignments Submitted</Typography>
+                      <Typography variant="body1">
+                        2
+                      </Typography>
+                    </Paper>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Paper className={classes.paper}>
+                      <Typography variant="h6">Grade</Typography>
+                      <Typography variant="body1">
+                        A
+                      </Typography>
+                    </Paper>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Paper className={classes.paper}>
+                      <Typography variant="h6">Rejected Courses</Typography>
+                      <Typography variant="body1">
+                        0
+                      </Typography>
+                    </Paper>
+                  </Grid>
+                </Grid>):(null)))}
+              </div>
             </>
-          )}          
+          )}
         </main>
-
       </div>
     </div>
   );

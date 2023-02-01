@@ -1,19 +1,18 @@
-cloud:
-  aws:
-    credentials:
-      access-key: AKIAZTJ2QLZ4DLMTMUP2
-      secret-key: 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
-    region:
-      static: US East (N. Virginia) us-east-1
-    stack:
-      auto: false
-
-application:
-  bucket:
-    name: trackerhub
-
-
 spring:
+  mail:
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: 'true'
+          timeout: '5000'
+          auth: 'true'
+          connectiontimeout: '5000'
+          writetimeout: '5000'
+    host: smtp.gmail.com
+    username: shravanit950@gmail.com
+    password: hhfvrysvfiyijqxv
+    port: '587'
   servlet:
     multipart:
       enabled: true
@@ -28,17 +27,20 @@ spring.data.mongodb:
 server:
   port: 9092
 
-  mail:
-    properties:
-      mail:
-        smtp:
-          starttls:
-            enable: 'true'
-          timeout: '5000'
-          auth: 'true'
-          connectiontimeout: '5000'
-          writetimeout: '5000'
-    host: smtp.gmail.com
-    username: email-address
-    password: email-password
-    port: '587'
+
+cloud:
+  aws:
+    credentials:
+      access-key: AKIAWT35WVPUGGJFVTUF
+      secret-key: 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
+    region:
+      static: US East (N. Virginia) us-east-1
+    stack:
+      auto: false
+
+application:
+  bucket:
+    name: trackerhub
+
+
+

@@ -61,7 +61,7 @@ function Courses() {
     progress: undefined,
     theme: "colored",
   });
-  const APIURL = "http://localhost:9092/course/"
+  const APIURL = "http://192.168.1.7:9092/course/"
   useEffect(() => {
     axios.get(APIURL)
     .then((response)=> {

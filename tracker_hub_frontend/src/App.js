@@ -17,6 +17,10 @@ import PreviousAssignments from "./Pages/Assignments/PreviousAssignments";
 import ViewAssignments from "./Pages/Assignments/ViewAssignments";
 import SubmittedAssignments from "./Pages/Assignments/SubmittedAssignments";
 import FollowingCourses from "./Pages/Courses/FollowingCourses";
+import Profile from "./Pages/Profile/Profile";
+import LandingPage from "./Pages/Landing/Landing";
+import Landing from "./Pages/Landing/Landing";
+import ProtectedRote from "./ProtectedRote";
 
 function App() {
   return (
@@ -31,21 +35,24 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/contact-us" element={<Contactus />} />
         <Route path="/allcourses" element={<AllCourses />} />
-        <Route path="/assignment" element={<Assignments />} />
-        <Route path="/allcourses/courseDetails/:id" element={<CourseDetails />} />
-        <Route path="/dashboard" element={<Dashboard />}>
-          <Route path="assignment" element={<Assignments />} />
-          <Route path="courses" element={<Courses />} />
-          <Route path="createcourses" element={<CreateCourses />} />
-          <Route path="secretkey" element={<Secretkey />} />
-          <Route path="task" element={<Task />} />
-          <Route path="courserequest" element={<CourseRequest />} />
-          <Route path="previousassignments" element={<PreviousAssignments />} />
-          <Route path="viewassignment" element={<ViewAssignments />} />
-          <Route path="submittedassignments" element={<SubmittedAssignments />} />
-          <Route path="followingcourses" element={<FollowingCourses />} />
+        
+          <Route path="/assignment" element={<Assignments />} />
+          <Route path="/allcourses/courseDetails/:id" element={<CourseDetails />} />
+          <Route element={<ProtectedRote />}>
+            <Route path="/dashboard" exact element={<Dashboard />}>
+              <Route path="assignment" element={<Assignments />} />
+              <Route path="courses" element={<Courses />} />
+              <Route path="createcourses" element={<CreateCourses />} />
+              <Route path="secretkey" element={<Secretkey />} />
+              <Route path="task" element={<Task />} />
+              <Route path="courserequest" element={<CourseRequest />} />
+              <Route path="previousassignments" element={<PreviousAssignments />} />
+              <Route path="viewassignment" element={<ViewAssignments />} />
+              <Route path="submittedassignments" element={<SubmittedAssignments />} />
+              <Route path="followingcourses" element={<FollowingCourses />} />
+              <Route path="profile" element={<Profile />} />
+          </Route>
         </Route>
-
         <Route path="*"  element={<Notfound />}/>
 
         </Routes>

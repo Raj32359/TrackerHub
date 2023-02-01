@@ -72,7 +72,6 @@ function Login() {
     }
 
     useEffect(() => {
-      console.log(formErrors);
       if(Object.keys(formErrors).length === 0 && isSubmit) {
         console.log(formValues);
       }},[formValues]);
@@ -97,7 +96,7 @@ function Login() {
         return errors;
       }
 
-      const URL = "http://localhost:9092/user/login";
+      const URL = "http://192.168.1.7:9092/user/login";
       const navigate = useNavigate();
       
 

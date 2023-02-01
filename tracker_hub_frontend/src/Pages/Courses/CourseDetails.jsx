@@ -18,6 +18,7 @@ import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
 import "./Courses.css";
+import CommentSystem from "../Comment/CommentSystem";
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -108,7 +109,7 @@ const CourseDetails = () => {
       theme: "colored",
     });
 
-  const APIURL = "http://localhost:9092/course/" + id;
+  const APIURL = "http://192.168.1.7:9092/course/" + id;
   useEffect(() => {
     axios
       .get(APIURL)
@@ -204,7 +205,9 @@ const CourseDetails = () => {
             </Typography>
           </AccordionDetails>
         </Accordion>
+        
       </Container>
+      <CommentSystem />
       <Modal
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"

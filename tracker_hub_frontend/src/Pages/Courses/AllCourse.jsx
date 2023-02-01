@@ -15,7 +15,7 @@ import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import "./Courses.css";
 import axios from "axios";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -58,6 +58,11 @@ const useStyles = makeStyles((theme) => ({
 const AllCourses = () => {
   const classes = useStyles();
   const [courses, setCourses] = useState();
+  const [userDetails, setUserDetails] = useState();
+  const [requestDetails, setRequestDetails] = useState();
+  const [internalRequestDetails, setInternalRequestDetails] = useState();
+  const [courseName, setCourseName] = useState();
+  const [activatedKeyInput, setActivatedKeyInput] = useState();
 
   const notify = (msg) =>
     toast.success(msg, {
@@ -82,8 +87,9 @@ const AllCourses = () => {
       progress: undefined,
       theme: "colored",
     });
-  const APIURL = "http://localhost:9092/course/";
-  useEffect(() => {
+
+  const APIURL = "http://192.168.1.7:9092/course/";
+  const getAllCourse = () => {
     axios
       .get(APIURL)
       .then((response) => {
@@ -96,21 +102,83 @@ const AllCourses = () => {
         console.log(error.response.data);
         badNotify(error.response.data);
       });
+  };
+
+  useEffect(() => {
+    getAllCourse();
+    const details = JSON.parse(localStorage.getItem("userDetails"));
+    setUserDetails(details);
   }, []);
 
   const [open, setOpen] = React.useState(false);
 
-  const handleOpen = (val) => {
+  const APIURL2 = "http://192.168.1.7:9092/follow/courseDetails";
+  const handleOpen = (e, val, courseId, email) => {
+    e.preventDefault();
+    setInternalRequestDetails(courseId);
     setOpen(val);
+    axios
+      .get(`${APIURL2}/${courseId}/${email}`)
+      .then((response) => {
+        if (response.status === 200) {
+          console.log(response.data);
+          setRequestDetails(response.data);
+        }
+      })
+      .catch((error) => {
+        console.log(error.response.data);
+      });
   };
 
   const handleClose = () => {
     setOpen(false);
   };
 
+  const APIURL3 = "http://192.168.1.7:9092/course/followRequest";
+  const sendFollowRequest = (e, courseId, email) => {
+    e.preventDefault();
+    setInternalRequestDetails(courseId);
+    const data = {
+      courseId: internalRequestDetails,
+      courseName: `${courseName}`,
+      useremail: `${email}`,
+    };
+    axios
+      .post(APIURL3, data)
+      .then((response) => {
+        if (response.status === 201) {
+          console.log(response.data);
+          notify(response.data);
+        }
+      })
+      .catch((error) => {
+        console.log(error.response.data);
+        badNotify(error.response.data);
+      });
+  };
+
+  const APIURL4 = "http://192.168.1.7:9092/course/sendActivatekey";
+  const sendActivatedKey = (e, courseId, email) => {
+    e.preventDefault();
+    setInternalRequestDetails(courseId);
+    const activatedKey = activatedKeyInput;
+    axios
+      .post(`${APIURL4}/${courseId}/${activatedKey}/${email}`)
+      .then((response) => {
+        if (response.status === 200) {
+          console.log(response.data);
+          notify(response.data);
+        }
+      })
+      .catch((error) => {
+        console.log(error.response.data);
+        badNotify(error.response.data);
+      });
+  };
+
   return (
     <div>
-      <Container>
+      <Container maxWidth="xl">
         <Typography variant="h3" align="center">
           Courses
         </Typography>
@@ -129,18 +197,25 @@ const AllCourses = () => {
                         {item?.courseName}
                       </Typography>
                       <Typography variant="subtitle1" color="textSecondary">
-                        {item.professorName}
+                        {item?.professorName}
                       </Typography>
                     </CardContent>
                     <div className={classes.controls}>
                       <Button
                         className="follow_btn follow_left"
-                        onClick={() => {
-                          handleOpen(true);
+                        onClick={(e) => {
+                          handleOpen(
+                            e,
+                            true,
+                            item?.courseId,
+                            userDetails?.email
+                          );
+                          setCourseName(item?.courseName);
                         }}
                       >
                         Follow
                       </Button>
+
                       <Button
                         href={`/allcourses/courseDetails/${item?.courseId}`}
                         className="follow_btn follow_right"
@@ -173,61 +248,223 @@ const AllCourses = () => {
         }}
       >
         <Fade in={open}>
-          <div className={classes.paper}>
-          <Typography id="transition-modal-title"  align="center" variant="h5">
-              Please Enter Activate Key
-            </Typography>
-            <Grid
-              container
-              className="CreateCourse_GridContainer"
-              spacing={4}
-              justifyContent="center"
-              alignItems="center"
-            >
-              <Grid
-                item
-                xs={12}
-                md={12}
-                lg={12}
-                style={{ display: "flex", justifyContent: "center" }}
+          {requestDetails?.activatedKey === undefined ? (
+            <div className={classes.paper}>
+              <Typography
+                id="transition-modal-title"
+                align="center"
+                variant="h5"
               >
-                <Grid item spacing={4}>
-                  <Button
-                    className="follow_btn"
-                    style={{ height: "55px", padding: "0px 20px" }}
-                  >
-                    Send Request
-                  </Button>
+                Please Enter Activate Key
+              </Typography>
+              <Grid
+                container
+                className="CreateCourse_GridContainer"
+                spacing={4}
+                justifyContent="center"
+                alignItems="center"
+              >
+                <Grid
+                  item
+                  xs={12}
+                  md={12}
+                  lg={12}
+                  style={{ display: "flex", justifyContent: "center" }}
+                >
+                  <Grid item spacing={4}>
+                    {(requestDetails?.courseId === internalRequestDetails &&
+                      requestDetails?.authentication === "NotGranted") ||
+                    "Accepted" ||
+                    "Rejected" ? (
+                      <Button
+                        className="follow_btn NotGranted "
+                        style={{ height: "55px", padding: "0px 20px" }}
+                      >
+                        Send Request
+                      </Button>
+                    ) : (
+                      <Button
+                        className="follow_btn"
+                        style={{ height: "55px", padding: "0px 20px" }}
+                        onClick={(e) => {
+                          sendFollowRequest(
+                            e,
+                            internalRequestDetails,
+                            userDetails?.email
+                          );
+                        }}
+                      >
+                        Send Request
+                      </Button>
+                    )}
+                  </Grid>
+                </Grid>
+                <div className="cusom_Divider"></div>
+                <Grid
+                  item
+                  xs={12}
+                  md={12}
+                  lg={12}
+                  style={{ display: "flex", justifyContent: "center" }}
+                >
+                  <Grid item spacing={4}>
+                    <TextField
+                      variant="outlined"
+                      placeholder="Acivate key"
+                      name="activatedKey"
+                      onChange={(e) => {
+                        setActivatedKeyInput(e.target.value);
+                      }}
+                    ></TextField>
+                  </Grid>
+                  <Grid item spacing={4}>
+                    <Button
+                      className="follow_btn"
+                      style={{ height: "55px", padding: "0px 20px" }}
+                      onClick={(e) => {
+                        sendActivatedKey(
+                          e,
+                          internalRequestDetails,
+                          userDetails?.email
+                        );
+                      }}
+                    >
+                      Activate
+                    </Button>
+                  </Grid>
                 </Grid>
               </Grid>
-              <div className="cusom_Divider"></div>
+            </div>
+          ) : (requestDetails?.activatedKey).includes("Verified") ? (
+            <div className={classes.paper}>
               <Grid
-                item
-                xs={12}
-                md={12}
-                lg={12}
-                style={{ display: "flex", justifyContent: "center" }}
+                container
+                className="CreateCourse_GridContainer"
+                spacing={4}
+                justifyContent="center"
+                alignItems="center"
               >
-                <Grid item spacing={4}>
-                  <TextField
-                    variant="outlined"
-                    placeholder="Acivate key"
-                  ></TextField>
-                </Grid>
-                <Grid item spacing={4}>
-                  <Button
-                    className="follow_btn"
-                    disabled
-                    style={{ height: "55px", padding: "0px 20px" }}
-                  >
-                    Activate
-                  </Button>
+                <Grid
+                  item
+                  xs={12}
+                  md={12}
+                  lg={12}
+                  style={{ display: "flex", justifyContent: "center" }}
+                >
+                  <Grid item spacing={4}>
+                    <Typography
+                      id="transition-modal-title"
+                      align="center"
+                      variant="h5"
+                    >
+                      You are already accessed this course
+                    </Typography>
+                  </Grid>
                 </Grid>
               </Grid>
-            </Grid>
-          </div>
+            </div>
+          ) : (
+            <div className={classes.paper}>
+              <Typography
+                id="transition-modal-title"
+                align="center"
+                variant="h5"
+              >
+                Please Enter Activate Key
+              </Typography>
+              <Grid
+                container
+                className="CreateCourse_GridContainer"
+                spacing={4}
+                justifyContent="center"
+                alignItems="center"
+              >
+                <Grid
+                  item
+                  xs={12}
+                  md={12}
+                  lg={12}
+                  style={{ display: "flex", justifyContent: "center" }}
+                >
+                  <Grid item spacing={4}>
+                    {(requestDetails?.courseId === internalRequestDetails &&
+                      requestDetails?.authentication === "NotGranted") ||
+                    "Accepted" ||
+                    "Rejected" ? (
+                      <Button
+                        className="follow_btn NotGranted "
+                        style={{ height: "55px", padding: "0px 20px" }}
+                      >
+                        Send Request
+                      </Button>
+                    ) : (
+                      <Button
+                        className="follow_btn"
+                        style={{ height: "55px", padding: "0px 20px" }}
+                        onClick={(e) => {
+                          sendFollowRequest(
+                            e,
+                            internalRequestDetails,
+                            userDetails?.email
+                          );
+                        }}
+                      >
+                        Send Request
+                      </Button>
+                    )}
+                  </Grid>
+                </Grid>
+                <div className="cusom_Divider"></div>
+                <Grid
+                  item
+                  xs={12}
+                  md={12}
+                  lg={12}
+                  style={{ display: "flex", justifyContent: "center" }}
+                >
+                  <Grid item spacing={4}>
+                    <TextField
+                      variant="outlined"
+                      placeholder="Acivate key"
+                      name="activatedKey"
+                      onChange={(e) => {
+                        setActivatedKeyInput(e.target.value);
+                      }}
+                    ></TextField>
+                  </Grid>
+                  <Grid item spacing={4}>
+                    <Button
+                      className="follow_btn"
+                      style={{ height: "55px", padding: "0px 20px" }}
+                      onClick={(e) => {
+                        sendActivatedKey(
+                          e,
+                          internalRequestDetails,
+                          userDetails?.email
+                        );
+                      }}
+                    >
+                      Activate
+                    </Button>
+                  </Grid>
+                </Grid>
+              </Grid>
+            </div>
+          )}
         </Fade>
       </Modal>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
     </div>
   );
 };

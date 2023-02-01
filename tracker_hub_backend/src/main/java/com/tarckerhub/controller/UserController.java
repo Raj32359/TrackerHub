@@ -25,24 +25,24 @@ import com.tarckerhub.util.HashingPasswordGenerator;
 
 @RestController
 @RequestMapping("/user")
-@CrossOrigin(origins = "http://localhost:9092", maxAge = 36000)
+@CrossOrigin(origins = "*", maxAge = 36000)
 public class UserController {
 
 	@Autowired
 	private UserRepository userRepository;
-	
+
 	@Autowired
 	private MongoTemplate mongoTemplate;
 
 	@PostMapping("/signup")
 	public ResponseEntity<?> saveUser(@RequestBody User user) throws IOException {
 		User userDetails = userRepository.findUserByEmail(user.getEmail());
-		
-		if(userDetails != null) {
+
+		if (userDetails != null) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body("User Already Existed");
 		}
-		
-		if(userDetails == null) {
+
+		if (userDetails == null) {
 			String salt = HashingPasswordGenerator.getSlat(30);
 			user.setSalt(salt);
 			String mySecuredPassword = HashingPasswordGenerator.generatingSecurePassword(user.getPassword(), salt);
@@ -50,7 +50,7 @@ public class UserController {
 			userRepository.save(user);
 			return ResponseEntity.status(HttpStatus.CREATED).build();
 		}
-		
+
 		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
 	}
 
@@ -68,27 +68,24 @@ public class UserController {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("EMail / Password are Invalid");
 		}
 	}
-	
+
 	@GetMapping("/professors")
 	public ResponseEntity<?> getAllCouseId() {
 		Query query = new Query();
 		query.addCriteria(Criteria.where("role").is("Professor"));
-		Field include = query.fields()
-				.include("email")
-				.include("username")
-				.include("role");
+		Field include = query.fields().include("email").include("username").include("role");
 		List<User> list = mongoTemplate.find(query, User.class);
-		
-		if(list.isEmpty()) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No Courses are Assigned.");
+
+		if (list.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No Professor Found.");
 		}
-		
-		if(list !=null) {
+
+		if (list != null) {
 			return ResponseEntity.ok(list);
 		}
-		
+
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body("Evalauting Data.");
-		
+
 	}
 
 }
