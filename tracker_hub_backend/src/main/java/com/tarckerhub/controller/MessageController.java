@@ -22,6 +22,7 @@ import com.tarckerhub.model.Messages;
 import com.tarckerhub.resposit.MessageRepository;
 import com.tarckerhub.service.MessageService;
 import com.tarckerhub.service.StorageService;
+import com.tarckerhub.util.CloudinaryService;
 import com.tarckerhub.util.SendMailService;
 
 @RestController
@@ -42,6 +43,9 @@ public class MessageController {
 
 	@Autowired
 	private MessageRepository messageRepository;
+	
+	@Autowired
+	private CloudinaryService cloudinaryService;
 
 	@PostMapping(value = "/", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE })
 	public ResponseEntity<?> addNewAssigment(@RequestParam("message") String message,
@@ -53,8 +57,8 @@ public class MessageController {
 		List<String> list = new ArrayList<>();
 		if (files.length > 0) {
 			for (int i = 0; i < files.length; i++) {
-				String uploadFile = service.uploadFile(files[i]);
-				String fileURL = ("https://trackerhuub.s3.amazonaws.com/" + uploadFile);
+				String url = cloudinaryService.uploadFile(files[i]);
+				String fileURL = (url);
 				list.add(fileURL);
 			}
 			messages.setAttachments(list);

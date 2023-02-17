@@ -8,8 +8,6 @@ import java.util.List;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +15,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,6 +29,7 @@ import com.tarckerhub.resposit.CourseRequestRepository;
 import com.tarckerhub.resposit.UserRepository;
 import com.tarckerhub.service.AssignmentService;
 import com.tarckerhub.service.StorageService;
+import com.tarckerhub.util.CloudinaryService;
 import com.tarckerhub.util.SendMailService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -61,6 +59,9 @@ public class AssigmentController {
 	private UserRepository userRepository;
 
 	SendMailService sender;
+	
+	@Autowired
+	private CloudinaryService cloudinaryService;
 
 	public AssigmentController(SendMailService sender) {
 		this.sender = sender;
@@ -83,8 +84,8 @@ public class AssigmentController {
 		List<String> list = new ArrayList<>();
 		if (files.length > 0) {
 			for (int i = 0; i < files.length; i++) {
-				String uploadFile = service.uploadFile(files[i]);
-				String fileURL = ("https://trackerhuub.s3.amazonaws.com/" + uploadFile);
+				String url = cloudinaryService.uploadFile(files[i]);
+				String fileURL = (url);
 				list.add(fileURL);
 			}
 			assignements.setAttachements(list);

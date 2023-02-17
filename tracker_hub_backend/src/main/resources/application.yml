@@ -1,3 +1,9 @@
+cloudinary:
+  cloud_name: dmo3eeypr
+  api_key: 745275823126759
+  api_secret: IYvfuHkIWOE7d2yQNHl37tZRaQM
+
+
 spring:
   mail:
     properties:

@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tarckerhub.model.Course;
 import com.tarckerhub.model.Login;
 import com.tarckerhub.model.User;
 import com.tarckerhub.resposit.UserRepository;

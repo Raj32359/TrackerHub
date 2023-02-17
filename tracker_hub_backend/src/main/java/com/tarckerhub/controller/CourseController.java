@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.tarckerhub.model.Assignements;
 import com.tarckerhub.model.Course;
 import com.tarckerhub.model.FollowRequest;
 import com.tarckerhub.model.RequestAcceptance;
@@ -34,6 +33,7 @@ import com.tarckerhub.resposit.RequestAcceptanceRepository;
 import com.tarckerhub.resposit.UserRepository;
 import com.tarckerhub.service.CourseService;
 import com.tarckerhub.service.StorageService;
+import com.tarckerhub.util.CloudinaryService;
 
 @RestController
 @RequestMapping("/course")
@@ -60,15 +60,18 @@ public class CourseController {
 
 	@Autowired
 	private RequestAcceptanceRepository requestAcceptanceRepository;
+	
+	@Autowired
+	private CloudinaryService cloudinaryService;
 
 	@PostMapping(value = "/", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE })
 	public ResponseEntity<?> saveCourse(@RequestParam("course") String course,
 			@RequestParam("file") MultipartFile file) {
+		String url = cloudinaryService.uploadFile(file);
 		String serialID = RandomStringUtils.randomNumeric(8);
-		String uploadFile = service.uploadFile(file);
 		Course finalCourse = courseService.gson(course);
 		finalCourse.setCourseId(serialID);
-		finalCourse.setImageURL("https://trackerhuub.s3.amazonaws.com/" + uploadFile);
+		finalCourse.setImageURL(url);
 		Course savedCourse = courseRepository.save(finalCourse);
 		User user = userRepository.findUserByEmail(finalCourse.getProfessorName());
 		List<String> list = new ArrayList<>();
